@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@import "node_modules/modern-normalize/modern-normalize.css";
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-playfair);
+}
+p {
+  font-family: var(--font-open-sans);
+  line-height: 32px;
+}
+
+@theme {
+  --spacing: 8px;
+  --font-playfair: "Playfair Display", serif;
+  --font-open-sans: "Open Sans", sans-serif;
+  --color-primary: #e1edf5;
+  --color-font-dark: #1a1a1a;
+  --color-cta: #04e0e0;
+  --text-size-xxl: clamp(4.8rem, 3vw, 5.6rem);
+  --text-size-xl: clamp(2.2rem, 3vw, 2.6rem);
+  --text-size-lg: clamp(1.8rem, 3vw, 2.2rem);
+  --text-size-md: clamp(1.3rem, 3vw, 1.8rem);
+  --text-size-sm: clamp(1.1rem, 3vw, 1.3rem);
+  --text-size-xsm: clamp(0.8rem, 3vw, 0.95rem);
+  --breakpoint-mobile-md: 430px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+}
+
+@media screen and (prefers-color-scheme: dark) {
+}
