@@ -1,7 +1,20 @@
 export const data = [
   {
     id: 1,
-    image: "/public/card-img/el-nido.jpg",
+    images: [
+      {
+        image: "/card-img/el-nido/el-nido.jpg",
+        attribution: {
+          photographer: {
+            profile:
+              "https://unsplash.com/@justindkauffman?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+            name: "Justin Kauffman",
+          },
+          source:
+            "https://unsplash.com/photos/group-of-fishing-boats-on-body-of-water-_EtORiyLq6s?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+        },
+      },
+    ],
     name: "El Nido, Palawan",
     details: {
       location: "El Nido, Palawan, MIMAROPA, Philippines",
@@ -14,7 +27,20 @@ export const data = [
   },
   {
     id: 2,
-    image: "/public/card-img/malcapuya-island.jpg",
+    images: [
+      {
+        image: "/card-img/malcapuya/malcapuya-island.jpg",
+        attribution: {
+          photographer: {
+            profile:
+              "https://unsplash.com/@karlpb?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+            name: "Karl Paul Baldacchino",
+          },
+          source:
+            "https://unsplash.com/photos/people-on-beach-during-daytime-Rdxo1VM8V5g?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+        },
+      },
+    ],
     name: "Malcapuya Island, Palawan",
     details: {
       location: "Malcapuya Island, Coron, Palawan, MIMAROPA, Philippines",
@@ -27,7 +53,20 @@ export const data = [
   },
   {
     id: 3,
-    image: "/public/card-img/boracay-island.jpg",
+    images: [
+      {
+        image: "/card-img/boracay/boracay-island.jpg",
+        attribution: {
+          photographer: {
+            profile:
+              "https://unsplash.com/@maxgrig?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+            name: "Maksim Grigorev",
+          },
+          source:
+            "https://unsplash.com/photos/a-colorful-surfboard-sitting-on-a-beach-next-to-a-life-guard-tower-u0wbwPCGlQo?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+        },
+      },
+    ],
     name: "Boracay Island, Aklan",
     details: {
       location: "Boracay Island, Malay, Aklan, Western Visayas, Philippines",
@@ -40,7 +79,20 @@ export const data = [
   },
   {
     id: 4,
-    image: "/public/card-img/coron.jpg",
+    images: [
+      {
+        image: "/card-img/coron/coron.jpg",
+        attribution: {
+          photographer: {
+            profile:
+              "https://unsplash.com/@wholesam_?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+            name: "Sammy",
+          },
+          source:
+            "https://unsplash.com/photos/green-trees-near-body-of-water-under-blue-sky-during-daytime-7DokcE_mwtE?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+        },
+      },
+    ],
     name: "Coron, Palawan",
     details: {
       location: "Coron, Palawan, MIMAROPA, Philippines",
@@ -53,7 +105,44 @@ export const data = [
   },
   {
     id: 5,
-    image: "/public/card-img/camiguin.jpg",
+    images: [
+      {
+        image: "/card-img/camiguin/camiguin.jpg",
+        attribution: {
+          photographer: {
+            profile:
+              "https://unsplash.com/@neehku?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+            name: "Nico Alumbro",
+          },
+          source:
+            "https://unsplash.com/photos/a-beach-with-a-mountain-in-the-background-7tn2pxCt3x0?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+        },
+      },
+      {
+        image: "/card-img/camiguin/camiguin-1.jpg",
+        attribution: {
+          photographer: {
+            profile:
+              "https://unsplash.com/@benlodge123?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+            name: "Ben Lodge",
+          },
+          source:
+            "https://unsplash.com/photos/a-beach-with-clear-blue-water-and-mountains-in-the-background-NawUdcgiBzI?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+        },
+      },
+      {
+        image: "/card-img/camiguin/camiguin-2.jpg",
+        attribution: {
+          photographer: {
+            profile:
+              "https://unsplash.com/@bartros?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+            name: "Bart Ros",
+          },
+          source:
+            "https://unsplash.com/photos/man-sits-overlooking-a-large-cross-in-the-ocean-AnkKSHqBha8?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+        },
+      },
+    ],
     name: "Camiguin Island",
     details: {
       location: "Camiguin Province, Northern Mindanao, Philippines",
