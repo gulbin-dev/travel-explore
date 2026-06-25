@@ -1,9 +1,10 @@
+const imagekitUrlEndpoint = "https://ik.imagekit.io/4qbzemktu";
 export const data = [
   {
     id: 1,
     images: [
       {
-        image: "/card-img/el-nido/el-nido.jpg",
+        image: `${imagekitUrlEndpoint}/card-img/el-nido/el-nido.webp`,
         attribution: {
           photographer: {
             profile:
@@ -29,7 +30,7 @@ export const data = [
     id: 2,
     images: [
       {
-        image: "/card-img/malcapuya/malcapuya-island.jpg",
+        image: `${imagekitUrlEndpoint}/card-img/malcapuya/malcapuya-island.webp`,
         attribution: {
           photographer: {
             profile:
@@ -55,7 +56,7 @@ export const data = [
     id: 3,
     images: [
       {
-        image: "/card-img/boracay/boracay-island.jpg",
+        image: `${imagekitUrlEndpoint}/card-img/boracay/boracay-island.webp`,
         attribution: {
           photographer: {
             profile:
@@ -81,7 +82,7 @@ export const data = [
     id: 4,
     images: [
       {
-        image: "/card-img/coron/coron.jpg",
+        image: `${imagekitUrlEndpoint}/card-img/coron/coron.webp`,
         attribution: {
           photographer: {
             profile:
@@ -107,7 +108,7 @@ export const data = [
     id: 5,
     images: [
       {
-        image: "/card-img/camiguin/camiguin.jpg",
+        image: `${imagekitUrlEndpoint}/card-img/camiguin/camiguin.webp`,
         attribution: {
           photographer: {
             profile:
@@ -119,7 +120,7 @@ export const data = [
         },
       },
       {
-        image: "/card-img/camiguin/camiguin-1.jpg",
+        image: `${imagekitUrlEndpoint}/card-img/camiguin/camiguin-1.webp`,
         attribution: {
           photographer: {
             profile:
@@ -131,7 +132,7 @@ export const data = [
         },
       },
       {
-        image: "/card-img/camiguin/camiguin-2.jpg",
+        image: `${imagekitUrlEndpoint}/card-img/camiguin/camiguin-2.webp`,
         attribution: {
           photographer: {
             profile:
