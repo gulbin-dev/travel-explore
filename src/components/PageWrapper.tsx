@@ -1,9 +1,40 @@
+import { useGSAP, ScrollSmoother } from "@utils/gsap";
+import { useRef } from "react";
+import { store } from "@/utils/redux-toolkit/store";
+import { Provider } from "react-redux";
+import ModalWrapper from "@/routes/-component/ModalWrapper";
+import { ClientOnly } from "@tanstack/react-router";
+
 export default function PageWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useGSAP(
+    () => {
+      ScrollSmoother.create({
+        smooth: 1.5,
+        effects: true,
+        smoothTouch: 0.1,
+        speed: 0.5,
+      });
+    },
+    { dependencies: [], scope: containerRef },
+  );
   return (
-    <main className="bg-primary text-primary font-open-sans">{children}</main>
+    <Provider store={store}>
+      <ClientOnly>
+        <ModalWrapper />
+      </ClientOnly>
+      <div ref={containerRef} id="smooth-wrapper">
+        <div id="smooth-content">
+          <main className="bg-primary text-primary font-open-sans">
+            {children}
+          </main>
+        </div>
+      </div>
+    </Provider>
   );
 }
