@@ -1,12 +1,12 @@
-import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
-import { defineConfig } from 'vite'
-import { devtools } from '@tanstack/devtools-vite'
+import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
+import { defineConfig } from "vite";
+import { devtools } from "@tanstack/devtools-vite";
 
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
-import viteReact from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import netlify from '@netlify/vite-plugin-tanstack-start'
+import viteReact from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import netlify from "@netlify/vite-plugin-tanstack-start";
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
@@ -27,7 +27,7 @@ const config = defineConfig({
         multipass: true,
         plugins: [
           {
-            name: 'preset-default',
+            name: "preset-default",
             params: {
               overrides: {
                 cleanupNumericValues: false,
@@ -39,11 +39,11 @@ const config = defineConfig({
               },
             },
           },
-          'sortAttrs',
+          "sortAttrs",
           {
-            name: 'addAttributesToSVGElement',
+            name: "addAttributesToSVGElement",
             params: {
-              attributes: [{ xmlns: 'http://www.w3.org/2000/svg' }],
+              attributes: [{ xmlns: "http://www.w3.org/2000/svg" }],
             },
           },
         ],
@@ -79,6 +79,6 @@ const config = defineConfig({
       cacheLocation: undefined,
     }),
   ],
-})
+});
 
-export default config
+export default config;
