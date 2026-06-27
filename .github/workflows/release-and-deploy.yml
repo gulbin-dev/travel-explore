@@ -3,7 +3,7 @@ name: Release Tag and Deploy
 on:
   push:
     branches:
-      - master
+      - main
 
 permissions:
   contents: write
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   release-stable:
-    if: github.ref_name == 'master' || github.base_ref == 'master'
+    if: github.ref_name == 'main' || github.base_ref == 'main'
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -23,14 +23,14 @@ jobs:
         id: release
         with:
           token: ${{ secrets.TRAVEL_EXPLORE_TOKEN }}
-          target-branch: master
+          target-branch: main
           release-type: node
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
   deploy-stable:
     needs: release-stable
-    if: github.ref_name == 'master' && needs.release-stable.outputs.release_created
+    if: github.ref_name == 'main' && needs.release-stable.outputs.release_created
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
