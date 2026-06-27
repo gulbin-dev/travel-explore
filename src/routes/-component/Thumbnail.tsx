@@ -8,7 +8,7 @@ type CardThumbnailProps = Omit<ImageProps, "layout" | "width" | "height"> & {
 export function CardThumbnail({ src }: CardThumbnailProps) {
   return (
     <Image
-      src={src || "/card-img/camiguin/camiguin.webp"}
+      src={src}
       layout="constrained"
       width={96}
       height={96}
