@@ -8,11 +8,13 @@ export interface ItemProp {
         name: string;
       };
       source: string;
+      provider: string;
     };
   }[];
   name: string;
   details: {
     location: string;
+    mapLocation: string;
     description: string;
     activities: string;
   };
