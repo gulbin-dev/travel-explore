@@ -11,4 +11,6 @@ export const InstagramIcon = function InstagramIcon() {
 };
 
 export const LinkIcon = <Link size={48} />;
-export const LocataionPinIcon = <MapPinIcon size={24} />;
+export const LocataionPinIcon = (
+  <MapPinIcon size={24} color="var(--color-cta)" />
+);
