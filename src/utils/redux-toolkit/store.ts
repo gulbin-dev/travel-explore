@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 // Import the reducer from your slice file
-import isImageOnViewReducer from "@utils/redux-toolkit/feature/viewImageSlice"; // Update this path to match your file structure
+import isImageOnViewReducer from "@utils/redux-toolkit/feature/viewImageSlice";
+import isMapOnViewReducer from "@utils/redux-toolkit/feature/viewMapSlice";
 
 export const store = configureStore({
   reducer: {
     // Register the reducer here
     isImageOnView: isImageOnViewReducer,
+    isMapOnView: isMapOnViewReducer,
   },
 });
 
