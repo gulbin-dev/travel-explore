@@ -1,7 +1,7 @@
-import { gsap } from "gsap";
-import { Observer } from "gsap/Observer";
-import { ScrollSmoother } from "gsap/ScrollSmoother";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap } from "gsap/dist/gsap";
+import { Observer } from "gsap/dist/Observer";
+import { ScrollSmoother } from "gsap/dist/ScrollSmoother";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger, useGSAP, gsap, Observer);

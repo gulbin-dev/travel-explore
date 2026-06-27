@@ -8,22 +8,27 @@ import { Link } from "@tanstack/react-router";
 import Card from "@/components/UI/Card";
 import { CardThumbnail } from "./Thumbnail";
 import Attribution from "@/components/UI/Attribution";
-import ButtonCtaLink from "@/components/UI/ButtonCtaLink";
 import { Image } from "@unpic/react";
 import type { ItemProp } from "@utils/types";
 import { gsap, useGSAP, mediaQueries, ScrollTrigger } from "@utils/gsap";
 import { useInView } from "react-intersection-observer";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useAppDispatch } from "@/hooks/redux-hooks";
 import { setImageOnView } from "@/utils/redux-toolkit/feature/viewImageSlice";
+import { setMapOnView } from "@utils/redux-toolkit/feature/viewMapSlice";
+import Button from "@/components/UI/Button";
 
 export default function TouristSpot({ item }: { item: ItemProp }) {
   const containerRef = useRef<HTMLLIElement | null>(null);
+  const ulContainerRef = useRef<HTMLUListElement | null>(null);
+  const tl = useRef<gsap.core.Timeline | null>(null);
   const { ref, inView } = useInView({
     threshold: 0,
     rootMargin: "0px 0px 250px 0px",
     triggerOnce: true,
   });
+  const [isToggledShareLinks, setIsToggledShareLinks] =
+    useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   // this will only run when the element scope is in view
@@ -48,6 +53,12 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             const divParralaxView = li.querySelector(".div__parralaxView");
             const progressScrollBarDiv = li.querySelector(
               ".progress-scroll-bar__div--animate",
+            );
+            const descriptionScrollAnimate = li.querySelector(
+              ".description__p--scroll-animate",
+            );
+            const activitiesScrollAnimate = li.querySelector(
+              ".activities__p--scroll-animate",
             );
 
             const setParallaxY = gsap.quickTo(divParralaxView, "y", {
@@ -79,9 +90,25 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             });
             const animateProgressScrollBarDiv = (progress: number) => {
               const scaleX = progress * 2;
-              console.log(scaleX);
               scaleProgressBar(scaleX);
             };
+
+            const animateNextCardContent = gsap
+              .timeline()
+              .to(descriptionScrollAnimate, {
+                opacity: 0,
+                yPercent: -120,
+              })
+              .to(
+                activitiesScrollAnimate,
+                {
+                  opacity: 1,
+                  y: 0,
+                },
+                "<+=0.3",
+              )
+              .pause();
+
             const animateParallaxImage = (progress: number) => {
               const parallaxRange = 180;
 
@@ -111,7 +138,6 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             gsap.to(divParralaxView, {
               opacity: 1,
               overwrite: true,
-
               scrollTrigger: {
                 trigger: divParralaxView,
                 start: "top center",
@@ -167,12 +193,53 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
                 animateProgressScrollBarDiv(self.progress);
               },
             });
+            ScrollTrigger.create({
+              trigger: li,
+              start: "top 30%",
+              end: "bottom top",
+              scrub: true,
+              onUpdate: (self) => {
+                const progress = self.progress * 2;
+                if (progress >= 0.6) animateNextCardContent.play();
+                else {
+                  animateNextCardContent.reverse();
+                }
+              },
+            });
             ScrollTrigger.refresh(); // expect refresh trigger after ScrollTrigger initialization
           });
         }
       });
     },
     { dependencies: [inView], scope: containerRef },
+  );
+
+  useGSAP(
+    () => {
+      tl.current = gsap.timeline({ paused: true }).to(ulContainerRef.current, {
+        opacity: 1,
+        yPercent: -40,
+        duration: 0.3,
+        ease: "power1.out",
+      });
+    },
+    { scope: ulContainerRef },
+  );
+
+  useGSAP(
+    () => {
+      if (!tl.current) return;
+
+      if (isToggledShareLinks) {
+        tl.current.play();
+      } else {
+        tl.current.reverse();
+      }
+    },
+    {
+      dependencies: [isToggledShareLinks],
+      scope: ulContainerRef,
+    },
   );
 
   return (
@@ -222,7 +289,9 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
                   </a>{" "}
                   on{" "}
                   <a href={item.images[0].attribution.source} target="_blank">
-                    <span className="text-cta underline">Unsplash</span>
+                    <span className="text-cta underline">
+                      {item.images[0].attribution.provider}
+                    </span>
                   </a>
                 </p>
               </Attribution>
@@ -282,30 +351,54 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
               </p>
             </header>
 
-            <article className="line-clamp-6 px-3">
-              <p className="duration-0!">{item.details.description}</p>
-              <p className="duration-0!">{item.details.activities}</p>
-            </article>
-            <footer className="tablet:justify-normal desktop:gap-6 mt-4 flex justify-between px-3">
-              <ButtonCtaLink to="" className="bg-cta text-primary">
-                See Map
-              </ButtonCtaLink>
+            <article className="desktop:line-clamp-none desktop:relative desktop:overflow-hidden line-clamp-6 px-3">
+              <p className="description__p--scroll-animate duration-0!">
+                {item.details.description}
+              </p>
 
-              <ul aria-label="Social links" className="flex gap-3">
-                <li>
-                  <Link to="/">
-                    <FacebookIcon />
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/">
-                    <InstagramIcon />
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/">{LinkIcon}</Link>
-                </li>
-              </ul>
+              <p className="desktop:absolute activities__p--scroll-animate desktop:top-0 desktop:opacity-0 duration-0!">
+                {item.details.activities}
+              </p>
+            </article>
+            <footer className="tablet:justify-normal tablet:gap-9 desktop:gap-6 relative mt-4 flex justify-between px-3">
+              <Button onClick={() => dispatch(setMapOnView(item))}>
+                See Map
+              </Button>
+              <Button
+                onClick={() => {
+                  dispatch(setImageOnView(item));
+                }}
+                className="desktop:block hidden"
+              >
+                View Images
+              </Button>
+              <div className="relative w-1/3">
+                <Button
+                  onClick={() => setIsToggledShareLinks((prev) => !prev)}
+                  className="bg-primary relative z-1 border"
+                >
+                  Share
+                </Button>
+                <ul
+                  ref={ulContainerRef}
+                  aria-label="Social links"
+                  className="bg-primary/10 absolute bottom-5 left-0 flex gap-2.5 rounded-2xl p-3 opacity-0 backdrop-blur-2xl"
+                >
+                  <li>
+                    <Link to="/">
+                      <FacebookIcon />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/">
+                      <InstagramIcon />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/">{LinkIcon}</Link>
+                  </li>
+                </ul>
+              </div>
             </footer>
           </Card>
         </div>

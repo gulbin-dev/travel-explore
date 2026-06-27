@@ -4,7 +4,7 @@ import type { ItemProp } from "@utils/types";
 
 interface ToggleState {
   isToggled: boolean;
-  activeItem: ItemProp | null; // Add this to hold the current item data
+  activeItem: ItemProp | null;
 }
 
 const initialState: ToggleState = {
@@ -16,7 +16,6 @@ export const isImageOnViewSlice = createSlice({
   name: "isImageOnView",
   initialState,
   reducers: {
-    // Modify this to accept the item data when opening
     setImageOnView: (state, action: PayloadAction<ItemProp | null>) => {
       if (action.payload === null) {
         state.isToggled = false;
