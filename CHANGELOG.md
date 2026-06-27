@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/gulbin-dev/travel-explore/compare/v1.0.0...v1.1.0) (2026-06-27)
+
+
+### Features
+
+* add image viewer and image carousel ([45a6a0c](https://github.com/gulbin-dev/travel-explore/commit/45a6a0cc60e4e536da5bb14c14de7fbbb5b425af))
+
 ## 1.0.0 (2026-06-27)
 
 
