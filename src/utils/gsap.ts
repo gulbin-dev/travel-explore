@@ -1,4 +1,4 @@
-import { gsap } from "gsap";
+import { gsap } from "gsap/dist/gsap";
 import { Observer } from "gsap/dist/Observer";
 import { ScrollSmoother } from "gsap/dist/ScrollSmoother";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
