@@ -14,25 +14,44 @@ export default function Carousel({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
-  const [scale, setScale] = useState(1);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const scaleRef = useRef(scale);
-  const positionRef = useRef(position);
-  const dragStartRef = useRef(dragStart);
-  const isDraggingRef = useRef(isDragging);
+  const scaleRef = useRef(1);
+  const positionRef = useRef({ x: 0, y: 0 });
+  const dragOriginRef = useRef({ x: 0, y: 0 });
+  const isDraggingRef = useRef(false);
   const lastTapTimeRef = useRef(0);
-  const quickToXRef = useRef<((value: number) => void) | null>(null);
-  const quickToYRef = useRef<((value: number) => void) | null>(null);
+  const quickSetterXRef = useRef<((value: number) => void) | null>(null);
+  const quickSetterYRef = useRef<((value: number) => void) | null>(null);
   const pinchStateRef = useRef<{
     initialDistance: number;
     initialScale: number;
     initialPosition: { x: number; y: number };
     initialCenter: { x: number; y: number };
   } | null>(null);
+
+  const setContainerCursor = (cursor: string) => {
+    if (imageContainerRef.current) {
+      imageContainerRef.current.style.cursor = cursor;
+    }
+  };
+
+  const resetZoom = () => {
+    scaleRef.current = 1;
+    positionRef.current = { x: 0, y: 0 };
+    dragOriginRef.current = { x: 0, y: 0 };
+    isDraggingRef.current = false;
+
+    if (imageContainerRef.current) {
+      gsap.killTweensOf(imageContainerRef.current, ["x", "y", "scale"]);
+      gsap.set(imageContainerRef.current, {
+        x: 0,
+        y: 0,
+        scale: 1,
+      });
+      setContainerCursor("default");
+    }
+  };
 
   const clampPosition = (
     nextScale: number,
@@ -74,9 +93,10 @@ export default function Carousel({
     nextPosition: { x: number; y: number },
   ) => {
     const clampedPosition = clampPosition(nextScale, nextPosition);
-    setPosition(clampedPosition);
-    quickToXRef.current?.(clampedPosition.x);
-    quickToYRef.current?.(clampedPosition.y);
+    positionRef.current = clampedPosition;
+
+    quickSetterXRef.current?.(clampedPosition.x);
+    quickSetterYRef.current?.(clampedPosition.y);
     return clampedPosition;
   };
 
@@ -84,49 +104,34 @@ export default function Carousel({
     nextScale: number,
     nextPosition?: { x: number; y: number },
   ) => {
-    setScale(nextScale);
+    scaleRef.current = nextScale;
 
-    if (imageContainerRef.current) {
-      gsap.to(imageContainerRef.current, {
-        scale: nextScale,
-        duration: 0.12,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-    }
+    if (!imageContainerRef.current) return { x: 0, y: 0 };
+
+    gsap.to(imageContainerRef.current, {
+      scale: nextScale,
+      duration: 0.12,
+      ease: "power3.out",
+      overwrite: "auto",
+    });
 
     if (nextScale <= 1) {
       const resetPosition = { x: 0, y: 0 };
-      setPosition(resetPosition);
-      quickToXRef.current?.(0);
-      quickToYRef.current?.(0);
+      positionRef.current = resetPosition;
+      quickSetterXRef.current?.(0);
+      quickSetterYRef.current?.(0);
+      setContainerCursor("default");
       return resetPosition;
     }
 
+    setContainerCursor("grab");
     const resolvedPosition = nextPosition ?? positionRef.current;
     return applyPosition(nextScale, resolvedPosition);
   };
 
   useEffect(() => {
-    scaleRef.current = scale;
-  }, [scale]);
-
-  useEffect(() => {
-    positionRef.current = position;
-  }, [position]);
-
-  useEffect(() => {
-    dragStartRef.current = dragStart;
-  }, [dragStart]);
-
-  useEffect(() => {
-    isDraggingRef.current = isDragging;
-  }, [isDragging]);
-
-  // Reset zoom and position when image closes or changes
-  useEffect(() => {
     if (!fullscreenImage) {
-      applyScale(1);
+      resetZoom();
       setIsFullScreen(false);
     } else {
       setIsFullScreen(true);
@@ -148,7 +153,7 @@ export default function Carousel({
           y: (firstTouch.clientY + secondTouch.clientY) / 2,
         },
       };
-      setIsDragging(false);
+      event.preventDefault();
       return;
     }
 
@@ -160,107 +165,52 @@ export default function Carousel({
       if (isDoubleTap) {
         const nextScale = scaleRef.current > 1 ? 1 : 2;
         applyScale(nextScale, positionRef.current);
-        setIsDragging(false);
-        return;
-      }
-
-      if (scaleRef.current > 1) {
-        // event.preventDefault();
-        setIsDragging(true);
-        setDragStart({
-          x: event.touches[0].clientX - positionRef.current.x,
-          y: event.touches[0].clientY - positionRef.current.y,
-        });
+        event.preventDefault();
       }
     }
   };
 
   const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (
-      event.touches.length === 1 &&
-      isDraggingRef.current &&
-      scaleRef.current > 1
-    ) {
-      // event.preventDefault();
-      const touch = event.touches[0];
-      applyPosition(scaleRef.current, {
-        x: touch.clientX - dragStartRef.current.x,
-        y: touch.clientY - dragStartRef.current.y,
-      });
-      return;
-    }
+    if (event.touches.length !== 2 || !pinchStateRef.current) return;
 
-    if (event.touches.length === 2 && pinchStateRef.current) {
-      const [firstTouch, secondTouch] = [event.touches[0], event.touches[1]];
-      const distance = Math.hypot(
-        secondTouch.clientX - firstTouch.clientX,
-        secondTouch.clientY - firstTouch.clientY,
-      );
+    const [firstTouch, secondTouch] = [event.touches[0], event.touches[1]];
+    const distance = Math.hypot(
+      secondTouch.clientX - firstTouch.clientX,
+      secondTouch.clientY - firstTouch.clientY,
+    );
 
-      if (distance === 0) return;
+    if (distance === 0) return;
 
-      const nextScale = Math.max(
-        1,
-        Math.min(
-          pinchStateRef.current.initialScale *
-            (distance / pinchStateRef.current.initialDistance),
-          5,
-        ),
-      );
+    const nextScale = Math.max(
+      1,
+      Math.min(
+        pinchStateRef.current.initialScale *
+          (distance / pinchStateRef.current.initialDistance),
+        5,
+      ),
+    );
 
-      applyScale(nextScale, positionRef.current);
+    applyScale(nextScale, positionRef.current);
 
-      if (nextScale === 1) {
-        return;
-      }
+    if (nextScale === 1) return;
 
-      const centerX = (firstTouch.clientX + secondTouch.clientX) / 2;
-      const centerY = (firstTouch.clientY + secondTouch.clientY) / 2;
-      const scaleRatio = nextScale / pinchStateRef.current.initialScale;
-      const deltaX = centerX - pinchStateRef.current.initialCenter.x;
-      const deltaY = centerY - pinchStateRef.current.initialCenter.y;
+    const centerX = (firstTouch.clientX + secondTouch.clientX) / 2;
+    const centerY = (firstTouch.clientY + secondTouch.clientY) / 2;
+    const scaleRatio = nextScale / pinchStateRef.current.initialScale;
+    const deltaX = centerX - pinchStateRef.current.initialCenter.x;
+    const deltaY = centerY - pinchStateRef.current.initialCenter.y;
 
-      applyPosition(nextScale, {
-        x: pinchStateRef.current.initialPosition.x + deltaX * (scaleRatio - 1),
-        y: pinchStateRef.current.initialPosition.y + deltaY * (scaleRatio - 1),
-      });
-      return;
-    }
+    applyPosition(nextScale, {
+      x: pinchStateRef.current.initialPosition.x + deltaX * (scaleRatio - 1),
+      y: pinchStateRef.current.initialPosition.y + deltaY * (scaleRatio - 1),
+    });
+    event.preventDefault();
   };
 
   const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
     if (event.touches.length < 2) {
       pinchStateRef.current = null;
     }
-
-    if (event.touches.length === 0) {
-      setIsDragging(false);
-    }
-  };
-
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (scaleRef.current === 1) return;
-
-    event.preventDefault();
-    setIsDragging(true);
-    setDragStart({
-      x: event.clientX - positionRef.current.x,
-      y: event.clientY - positionRef.current.y,
-    });
-  };
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current) return;
-
-    event.preventDefault();
-    applyPosition(scaleRef.current, {
-      x: event.clientX - dragStartRef.current.x,
-      y: event.clientY - dragStartRef.current.y,
-    });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
   };
 
   // Track index inside a ref to prevent component re-renders that reset GSAP
@@ -284,21 +234,24 @@ export default function Carousel({
     () => {
       if (!fullscreenImage || !imageContainerRef.current) return;
 
-      quickToXRef.current = gsap.quickTo(imageContainerRef.current, "x", {
-        duration: 0.12,
-        ease: "power3.out",
-      });
-      quickToYRef.current = gsap.quickTo(imageContainerRef.current, "y", {
-        duration: 0.12,
-        ease: "power3.out",
-      });
+      quickSetterXRef.current = gsap.quickSetter(
+        imageContainerRef.current,
+        "x",
+        "px",
+      ) as (value: number) => void;
+      quickSetterYRef.current = gsap.quickSetter(
+        imageContainerRef.current,
+        "y",
+        "px",
+      ) as (value: number) => void;
+
       const observer = Observer.create({
         target: imageContainerRef.current,
         type: "wheel,touch,pointer",
         preventDefault: false,
-
+        tolerance: 10,
         onWheel: (self) => {
-          const zoomFactor = 0.1;
+          const zoomFactor = 0.12;
           let nextScale =
             scaleRef.current + (self.deltaY < 0 ? zoomFactor : -zoomFactor);
           nextScale = Math.max(1, Math.min(nextScale, 5));
@@ -306,13 +259,40 @@ export default function Carousel({
           self.event.preventDefault();
           applyScale(nextScale, positionRef.current);
         },
+        onPress: (self) => {
+          const x = self.x ?? 0;
+          const y = self.y ?? 0;
+          if (scaleRef.current > 1) {
+            isDraggingRef.current = true;
+            dragOriginRef.current = {
+              x: x - positionRef.current.x,
+              y: y - positionRef.current.y,
+            };
+            setContainerCursor("grabbing");
+          }
+        },
+        onDrag: (self) => {
+          if (!isDraggingRef.current || scaleRef.current <= 1) return;
+
+          const x = self.x ?? 0;
+          const y = self.y ?? 0;
+          const nextPosition = {
+            x: x - dragOriginRef.current.x,
+            y: y - dragOriginRef.current.y,
+          };
+          applyPosition(scaleRef.current, nextPosition);
+        },
+        onDragEnd: () => {
+          isDraggingRef.current = false;
+          setContainerCursor(scaleRef.current > 1 ? "grab" : "default");
+        },
       });
 
       return () => {
         observer.kill();
         gsap.killTweensOf(imageContainerRef.current, ["x", "y", "scale"]);
-        quickToXRef.current = null;
-        quickToYRef.current = null;
+        quickSetterXRef.current = null;
+        quickSetterYRef.current = null;
       };
     },
     { dependencies: [fullscreenImage], scope: imageContainerRef },
@@ -508,16 +488,10 @@ export default function Carousel({
             className="absolute inset-0 block h-full w-full transition-transform duration-100 ease-out will-change-transform"
             onClick={(e) => e.stopPropagation()}
             onWheel={(e) => e.preventDefault()}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             style={{
-              cursor:
-                scale > 1 ? (isDragging ? "grabbing" : "grab") : "default",
               touchAction: "none",
               transformOrigin: "center center",
             }}
