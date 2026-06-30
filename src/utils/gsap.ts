@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollSmoother, ScrollTrigger, useGSAP, gsap, Observer);
 const mediaQueries = {
   isMobileScreen: "(max-width: 480px)",
   isTabletScreen: "(min-width: 481px) and (max-width: 1279px)",
-  isDesktopScreen: "(min-width: 1280px)",
+  isDesktopScreen: "(min-width: 1024px)",
   isReduceMotion: "(prefers-reduced-motion: reduce)",
 };
 export { gsap, mediaQueries, ScrollSmoother, ScrollTrigger, useGSAP, Observer };
