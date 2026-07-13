@@ -1,44 +1,27 @@
-import {
-  FacebookIcon,
-  InstagramIcon,
-  LinkIcon,
-  LocataionPinIcon,
-} from "@utils/icons";
-import { Link } from "@tanstack/react-router";
-import Card from "@/components/UI/Card";
-import { CardThumbnail } from "./Thumbnail";
-import Attribution from "@/components/UI/Attribution";
+import { useRef } from "react";
 import { Image } from "@unpic/react";
+import Card from "@components/UI/Card";
+import Button from "@components/UI/Button";
+import Attribution from "@components/UI/Attribution";
+import { CardThumbnail } from "./Thumbnail";
+import { useAppDispatch } from "@hooks/redux-hooks";
+import { setImageOnView } from "@utils/redux-toolkit/feature/viewImageSlice";
+import { setMapOnView } from "@utils/redux-toolkit/feature/viewMapSlice";
 import type { ItemProp } from "@utils/types";
 import { gsap, useGSAP, mediaQueries, ScrollTrigger } from "@utils/gsap";
-import { useInView } from "react-intersection-observer";
-import { useRef, useState } from "react";
-import { useAppDispatch } from "@/hooks/redux-hooks";
-import { setImageOnView } from "@/utils/redux-toolkit/feature/viewImageSlice";
-import { setMapOnView } from "@utils/redux-toolkit/feature/viewMapSlice";
-import Button from "@/components/UI/Button";
+import { LocataionPinIcon } from "@utils/icons";
+import ShareableLinks from "./ShareableLinks";
 
 export default function TouristSpot({ item }: { item: ItemProp }) {
   const containerRef = useRef<HTMLLIElement | null>(null);
-  const ulContainerRef = useRef<HTMLUListElement | null>(null);
-  const tl = useRef<gsap.core.Timeline | null>(null);
-  const { ref, inView } = useInView({
-    threshold: 0,
-    rootMargin: "0px 0px 250px 0px",
-    triggerOnce: true,
-  });
-  const [isToggledShareLinks, setIsToggledShareLinks] =
-    useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  // this will only run when the element scope is in view
-  // this reduce long thread tasks on mainthread when page load
+  // Scroll animation
   useGSAP(
     () => {
-      if (!inView) return;
       const mm = gsap.matchMedia();
       mm.add(mediaQueries, (context) => {
-        const { isDesktopScreen } = context.conditions ?? {};
+        const { isDesktopScreen, isReduceMotion } = context.conditions ?? {};
         if (isDesktopScreen) {
           const touristSpots =
             gsap.utils.toArray<HTMLLIElement>(".container__div"); // toArray is use to containerize querySelector
@@ -48,9 +31,9 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             const card = li.querySelector(".card__div");
             const imgParallax = li.querySelector(".img--parallax");
             const divParallaxContainerClip = li.querySelector(
-              ".parralax-container__div--clip",
+              ".Parallax-container__div--clip",
             );
-            const divParralaxView = li.querySelector(".div__parralaxView");
+            const divParallaxView = li.querySelector(".div__ParallaxView");
             const progressScrollBarDiv = li.querySelector(
               ".progress-scroll-bar__div--animate",
             );
@@ -61,7 +44,7 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
               ".activities__p--scroll-animate",
             );
 
-            const setParallaxY = gsap.quickTo(divParralaxView, "y", {
+            const setParallaxY = gsap.quickTo(divParallaxView, "y", {
               duration: 0.8,
               ease: "power1.out",
             });
@@ -85,6 +68,7 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             );
             const animateSpanCounter = gsap.to(spanPinCounter, {
               y: 0,
+              opacity: 1,
               overwrite: true,
               paused: true,
             });
@@ -112,35 +96,41 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             const animateParallaxImage = (progress: number) => {
               const parallaxRange = 180;
 
-              const targetY = progress * parallaxRange - parallaxRange / 2;
+              const targetY =
+                progress * parallaxRange -
+                parallaxRange / (isReduceMotion ? 4 : 2);
 
               moveImage(targetY);
             };
 
+            // --- Span Counter ---
             ScrollTrigger.create({
               trigger: li,
               start: "top 30%",
-              end: "bottom+=100% 30%",
+              end: "bottom 30%",
               pin: divPinCounter,
               pinSpacing: false,
               fastScrollEnd: true,
               scrub: 1,
               onEnter: () => animateSpanCounter.play(),
               onEnterBack: () => animateSpanCounter.play(),
-              onUpdate: (self) => {
-                if (self.progress > 0.6 && self.direction === 1) {
-                  animateSpanCounter.reverse();
-                }
-              },
               onLeave: () => animateSpanCounter.reverse(),
               onLeaveBack: () => animateSpanCounter.reverse(),
+              onUpdate: (self) => {
+                if (self.progress > 0.6 && self.direction === 1)
+                  animateSpanCounter.reverse();
+                else if (self.progress < 0.3 && self.direction === -1)
+                  animateSpanCounter.play();
+              },
             });
-            gsap.to(divParralaxView, {
+
+            // --- Parallax Box View ---
+            gsap.to(divParallaxView, {
               opacity: 1,
               overwrite: true,
               scrollTrigger: {
-                trigger: divParralaxView,
-                start: "top center",
+                trigger: divParallaxView,
+                start: "top " + (isReduceMotion ? "80%" : "center"),
                 endTrigger: li,
                 end: "center 20%",
                 fastScrollEnd: true,
@@ -148,26 +138,31 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
               },
             });
 
+            // --- Parallax Effect ---
             ScrollTrigger.create({
               trigger: divParallaxContainerClip,
               start: "top 30%",
               endTrigger: li,
               end: "bottom-=40% top",
               pin: true,
+              fastScrollEnd: true,
               pinSpacing: false,
               scrub: true,
               onUpdate: (self) => {
                 const elementHeight = 584;
-                const targetY = -(elementHeight * self.progress);
+                const targetY =
+                  -(elementHeight * self.progress) / (isReduceMotion ? 2 : 1);
                 setParallaxY(targetY);
               },
             });
 
+            // --- Card ---
             ScrollTrigger.create({
               trigger: li,
               start: "top 30%",
               end: "bottom top",
               pin: card,
+              fastScrollEnd: true,
               scrub: 1,
               onEnter: () => animateCard.play(),
               onEnterBack: () => animateCard.play(),
@@ -184,19 +179,12 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
               },
             });
 
+            // --- Card Content ---
             ScrollTrigger.create({
               trigger: li,
               start: "top 30%",
               end: "bottom top",
-              scrub: true,
-              onUpdate: (self) => {
-                animateProgressScrollBarDiv(self.progress);
-              },
-            });
-            ScrollTrigger.create({
-              trigger: li,
-              start: "top 30%",
-              end: "bottom top",
+              fastScrollEnd: true,
               scrub: true,
               onUpdate: (self) => {
                 const progress = self.progress * 2;
@@ -206,59 +194,41 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
                 }
               },
             });
-            ScrollTrigger.refresh(); // expect refresh trigger after ScrollTrigger initialization
+
+            // --- Progress Scroll ---
+            ScrollTrigger.create({
+              trigger: li,
+              start: "top 30%",
+              end: "bottom top",
+              fastScrollEnd: true,
+              scrub: true,
+              onUpdate: (self) => {
+                animateProgressScrollBarDiv(self.progress);
+              },
+            });
           });
         }
       });
     },
-    { dependencies: [inView], scope: containerRef },
-  );
-
-  useGSAP(
-    () => {
-      tl.current = gsap.timeline({ paused: true }).to(ulContainerRef.current, {
-        opacity: 1,
-        yPercent: -40,
-        duration: 0.3,
-        ease: "power1.out",
-      });
-    },
-    { scope: ulContainerRef },
-  );
-
-  useGSAP(
-    () => {
-      if (!tl.current) return;
-
-      if (isToggledShareLinks) {
-        tl.current.play();
-      } else {
-        tl.current.reverse();
-      }
-    },
-    {
-      dependencies: [isToggledShareLinks],
-      scope: ulContainerRef,
-    },
+    { dependencies: [], scope: containerRef },
   );
 
   return (
     <li
       ref={(el) => {
         containerRef.current = el;
-        ref(el);
       }}
       className="relative h-full"
     >
-      <div className="container__div tablet:grid-cols-8 desktop:grid-cols-12 grid grid-cols-4 pb-3">
+      <div className="container__div tablet:grid-cols-8 desktop:grid-cols-12 relative grid grid-cols-4 pb-3">
         <div className="desktop:col-start-2 desktop:col-end-5 desktop:h-[80vh] desktop:grid desktop:grid-cols-subgrid desktop:grid-rows-[140px_140px_1fr] desktop:justify-between relative col-span-full col-start-1 h-45">
-          <div className="pin__div--counter desktop:row-start-1 desktop:p-0 relative z-2 overflow-hidden p-3">
-            <span className="span__pin--counter font-playfair text-red desktop:block desktop:translate-y-[-120%] text-primary relative text-[140px] leading-15">
+          <div className="pin__div--counter desktop:row-start-1 desktop:col-start-1 desktop:col-span-2 desktop:p-0 relative z-2 overflow-hidden p-3">
+            <span className="span__pin--counter font-playfair text-red desktop:block desktop:translate-y-[-120%] text-primary desktop:opacity-100 desktop:motion-reduce:translate-y-0 desktop:motion-reduce:opacity-0 relative text-[140px] leading-15">
               0{item.id}
             </span>
           </div>
-          <div className="parralax-container__div--clip desktop:relative desktop:row-start-3 desktop:col-start-1 desktop:col-span-full desktop:duration-0 h-full w-full overflow-hidden">
-            <div className="div__parralaxView desktop:relative desktop:opacity-0 absolute inset-0 h-full overflow-hidden">
+          <div className="Parallax-container__div--clip desktop:relative desktop:row-start-3 desktop:col-start-1 desktop:col-span-full desktop:duration-0 h-full w-full overflow-hidden">
+            <div className="div__ParallaxView desktop:relative desktop:opacity-0 absolute inset-0 h-full overflow-hidden">
               <div className="relative h-[120%] w-[120%]">
                 <Image
                   src={item.images[0].image}
@@ -303,7 +273,7 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             <button
               className="relative z-1"
               onClick={() => {
-                dispatch(setImageOnView(item));
+                dispatch(setImageOnView({ item: item, itemIndex: 1 }));
               }}
             >
               <CardThumbnail src={item.images[1]?.image} />
@@ -313,7 +283,7 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             <button
               className="relative z-1"
               onClick={() => {
-                dispatch(setImageOnView(item));
+                dispatch(setImageOnView({ item: item, itemIndex: 2 }));
               }}
             >
               <CardThumbnail src={item.images[2]?.image} />
@@ -323,7 +293,7 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             <button
               className="relative z-1"
               onClick={() => {
-                dispatch(setImageOnView(item));
+                dispatch(setImageOnView({ item: item, itemIndex: 3 }));
               }}
             >
               <CardThumbnail src={item.images[3]?.image} />
@@ -336,7 +306,7 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
             aria-labelledby="name"
             className="card__div desktop:bg-primary/10 desktop:backdrop-blur-2xl desktop:p-3 desktop:rounded-2xl desktop:text-primary desktop:opacity-0 duration-0! will-change-transform"
           >
-            <header className="px-3 py-5">
+            <header className="">
               <div className="overflow-hidden">
                 <div className="bg-cta desktop:block progress-scroll-bar__div--animate mb-3 hidden h-1 origin-left scale-x-0 rounded-2xl"></div>
               </div>
@@ -351,7 +321,7 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
               </p>
             </header>
 
-            <article className="desktop:line-clamp-none desktop:relative desktop:overflow-hidden line-clamp-6 px-3">
+            <article className="desktop:relative desktop:overflow-hidden line-clamp-5">
               <p className="description__p--scroll-animate duration-0!">
                 {item.details.description}
               </p>
@@ -360,45 +330,19 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
                 {item.details.activities}
               </p>
             </article>
-            <footer className="tablet:justify-normal tablet:gap-9 desktop:gap-6 relative mt-4 flex justify-between px-3">
+            <footer className="tablet:justify-normal tablet:gap-9 desktop:gap-6 relative mt-4 flex justify-between">
               <Button onClick={() => dispatch(setMapOnView(item))}>
                 See Map
               </Button>
               <Button
                 onClick={() => {
-                  dispatch(setImageOnView(item));
+                  dispatch(setImageOnView({ item: item, itemIndex: 0 }));
                 }}
                 className="desktop:block hidden"
               >
                 View Images
               </Button>
-              <div className="relative w-1/3">
-                <Button
-                  onClick={() => setIsToggledShareLinks((prev) => !prev)}
-                  className="bg-primary relative z-1 border"
-                >
-                  Share
-                </Button>
-                <ul
-                  ref={ulContainerRef}
-                  aria-label="Social links"
-                  className="bg-primary/10 absolute bottom-5 left-0 flex gap-2.5 rounded-2xl p-3 opacity-0 backdrop-blur-2xl"
-                >
-                  <li>
-                    <Link to="/">
-                      <FacebookIcon />
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/">
-                      <InstagramIcon />
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/">{LinkIcon}</Link>
-                  </li>
-                </ul>
-              </div>
+              <ShareableLinks />
             </footer>
           </Card>
         </div>
