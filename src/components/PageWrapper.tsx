@@ -1,11 +1,15 @@
 import { useGSAP, ScrollSmoother } from "@utils/gsap";
-import { useRef } from "react";
+import { useRef, lazy } from "react";
 import { store } from "@/utils/redux-toolkit/store";
 import { Provider } from "react-redux";
-import ImageViewerModalWrapper from "@/routes/-component/ImageViewerModalWrapper";
 import { ClientOnly } from "@tanstack/react-router";
-import ModalMapWrapper from "@/routes/-component/ModalMapWrapper";
 
+const ImageViewerModal = lazy(
+  () => import("@/routes/-component/ImageViewerModal"),
+);
+const ModalMapWrapper = lazy(
+  () => import("@/routes/-component/ModalMapWrapper"),
+);
 export default function PageWrapper({
   children,
 }: {
@@ -27,9 +31,9 @@ export default function PageWrapper({
   return (
     <Provider store={store}>
       <ClientOnly>
-        <ImageViewerModalWrapper />
-        <ModalMapWrapper />
+        <ImageViewerModal />
       </ClientOnly>
+      <ModalMapWrapper />
       <div ref={containerRef} id="smooth-wrapper">
         <div id="smooth-content">
           <main className="bg-primary text-primary font-open-sans">
