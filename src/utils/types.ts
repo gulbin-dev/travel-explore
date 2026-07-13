@@ -20,3 +20,8 @@ export interface ItemProp {
   };
   socials: string;
 }
+
+export type ActiveItemProp = {
+  item: ItemProp;
+  itemIndex: number;
+} | null;
