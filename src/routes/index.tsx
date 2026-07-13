@@ -1,85 +1,147 @@
 import { gsap, useGSAP, mediaQueries, ScrollTrigger } from "@utils/gsap";
-import { createFileRoute, ClientOnly } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import ButtonCtaLink from "@/components/UI/ButtonCtaLink";
 import TouristSpots from "./-component/TouristSpots";
 import Attribution from "@components/UI/Attribution";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/")({ component: Home });
-
-gsap.config({
-  force3D: false,
-});
 
 function Home() {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  // reset scroll when navigate to home page to fix broken animation
+  // when navigated from abmout page with scrolled content
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    const frame = window.requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
-
       let moveOnScroll: gsap.QuickToFunc | null = null;
-
       mm.add(mediaQueries, (context) => {
-        const { isDesktopScreen } = context.conditions ?? {};
+        const {
+          isDesktopScreen,
+          isReduceMotion,
+          isMobileScreen,
+          isTabletScreen,
+        } = context.conditions ?? {};
+        ScrollTrigger.refresh();
 
+        const smallScreenDisplay = () => {
+          gsap.set(".heading__span--animate", { x: 0, opacity: 1 });
+          gsap.set(".heading__p--animate", { y: 0, opacity: 1 });
+          gsap.set(".heading__nav-links--animate", { y: 0, opacity: 1 });
+        };
+        if (isMobileScreen || isTabletScreen) {
+          smallScreenDisplay();
+          return;
+        }
         if (isDesktopScreen) {
           // --- INITIAL LOAD ANIMATION ---
           const animateInitialLoad = gsap.timeline({
-            smoothChildTiming: true,
-          });
+            onStart: () => {
+              document.body.style.overflow = "hidden";
+            },
+            onComplete: () => {
+              document.body.style.overflow = "";
 
-          animateInitialLoad
-            .fromTo(
-              ".heading__span--animate",
-              { xPercent: -100, opacity: 0 },
-              {
-                xPercent: 0,
-                opacity: 1,
-                stagger: { amount: 0.8, from: "start" },
-              },
-            )
-            .fromTo(
-              ".heading__p--animate",
-              { yPercent: 100, opacity: 0 },
-              { yPercent: 0, opacity: 1 },
-            )
-            .fromTo(
-              ".heading__nav-links--animate",
-              { yPercent: 100, opacity: 0 },
-              {
-                yPercent: 0,
-                opacity: 1,
-                stagger: { amount: 0.5, from: "start" },
-              },
-            );
+              // --- HERO SCROLL ANIMATION ---
+              const animateScroll = gsap.timeline({
+                scrollTrigger: {
+                  trigger: "#pin-hero",
+                  start: "top -1%",
+                  end: "bottom top",
+                  scrub: true,
+                  fastScrollEnd: true,
+                },
+              });
 
-          // --- HERO SCROLL ANIMATION ---
-          const animateScroll = gsap.timeline({
-            scrollTrigger: {
-              trigger: "#pin-hero",
-              start: 0,
-              end: "bottom top",
-              scrub: true,
-              fastScrollEnd: true,
+              animateScroll
+                .to(".heading__span--animate", {
+                  yPercent: isReduceMotion ? 0 : -150,
+                  opacity: isReduceMotion ? 0 : 1,
+                })
+                .to(
+                  ".heading__p--animate",
+                  {
+                    yPercent: isReduceMotion ? 0 : -100,
+                    opacity: isReduceMotion ? 0 : 1,
+                  },
+                  "<",
+                )
+                .to(
+                  ".heading__nav-links--animate",
+                  {
+                    yPercent: isReduceMotion ? 0 : -350,
+                    opacity: isReduceMotion ? 0 : 1,
+                  },
+                  "<",
+                )
+                .to(
+                  ".hero-bg__img--animate",
+                  {
+                    duration: 1,
+                    keyframes: {
+                      "20%": { scale: 1.2 },
+                      "100%": { scale: 1.5 },
+                    },
+                  },
+                  "<",
+                );
+
+              // --- PIN HERO TRIGGER ---
+              ScrollTrigger.create({
+                trigger: "#pin-hero",
+                start: 0,
+                end: "bottom+=9116 top",
+                pin: true,
+                pinSpacing: true,
+                onUpdate: (self) => {
+                  if (self.progress >= 0.1) {
+                    animateMoveOnScroll({ progress: self.progress });
+                  } else {
+                    if (moveOnScroll) moveOnScroll(0);
+                  }
+                },
+              });
+
+              // --- HERO TEXT CONTAINER PIN TRIGGER ---
+              ScrollTrigger.create({
+                trigger: "#container__div",
+                start: 0,
+                end: "50% top",
+                pin: true,
+                pinnedContainer: "#pin-hero",
+              });
             },
           });
-
-          animateScroll
-            .to(".heading__span--animate", { yPercent: -150 })
-            .to(".heading__p--animate", { yPercent: -100 }, "<")
-            .to(".heading__nav-links--animate", { yPercent: -350 }, "<")
-            .to(
-              ".hero-bg__img--animate",
-              {
-                duration: 1,
-                keyframes: {
-                  "20%": { scale: 1.2 },
-                  "100%": { scale: 1.5 },
-                },
+          animateInitialLoad
+            .to(".heading__span--animate", {
+              x: 0,
+              opacity: 1,
+              stagger: {
+                amount: 0.5,
+                from: "start",
               },
-              "<",
-            );
+            })
+            .to(".heading__p--animate", { y: 0, opacity: 1 }, "<")
+            .to(".heading__nav-links--animate", {
+              y: 0,
+              opacity: 1,
+              stagger: { amount: 0.5, from: "start" },
+            });
 
           moveOnScroll = gsap.quickTo(".hero-bg__img--animate", "y", {
             duration: 0.4,
@@ -90,45 +152,15 @@ function Home() {
             const maxTravelDistance = 300;
             if (moveOnScroll) moveOnScroll(progress * maxTravelDistance);
           };
-
-          // --- PIN HERO TRIGGER ---
-          ScrollTrigger.create({
-            trigger: "#pin-hero",
-            start: 0,
-            end: "bottom+=9116 top",
-            pin: true,
-            pinSpacing: true,
-            onUpdate: (self) => {
-              if (self.progress >= 0.1) {
-                animateMoveOnScroll({ progress: self.progress });
-              } else {
-                if (moveOnScroll) moveOnScroll(0);
-              }
-            },
-            onToggle: (self) => {
-              if (!self.isActive && moveOnScroll) moveOnScroll(0);
-            },
-          });
-
-          // --- CHILD EXIT PIN TRIGGER ---
-          ScrollTrigger.create({
-            trigger: "#container__div",
-            start: 0,
-            end: "50% top",
-            pin: true,
-            pinnedContainer: "#pin-hero",
-          });
-
-          ScrollTrigger.refresh();
         }
       });
     },
-    { scope: containerRef },
+    { dependencies: [], scope: containerRef },
   );
 
   return (
     <>
-      <section ref={containerRef} className="relative flex h-screen">
+      <section ref={containerRef} className="relative flex h-screen px-3">
         <div id="pin-hero" className="absolute inset-0 h-screen w-screen">
           <div className="bg-font-dark/40 absolute inset-0 z-1"></div>
           <img
@@ -156,34 +188,40 @@ function Home() {
         </div>
         <div
           id="container__div"
-          className="desktop:w-full desktop:mx-auto relative z-10 mx-3 max-w-180 place-self-center"
+          className="desktop:w-full desktop:mx-auto relative z-10 max-w-180 place-self-center"
         >
           <h1 className="text-size-xxl flex flex-col">
             <span className="container__span overflow-hidden">
-              <span className="heading__span--animate block">Travel</span>
+              <span className="heading__span--animate desktop:-translate-x-full desktop:opacity-0 desktop:motion-reduce:translate-x-0 block translate-x-0 opacity-100">
+                Travel
+              </span>
             </span>
             <span className="container__span overflow-hidden">
-              <span className="heading__span--animate block">Eat</span>
+              <span className="heading__span--animate desktop:-translate-x-full desktop:opacity-0 desktop:motion-reduce:translate-x-0 block translate-x-0 opacity-100">
+                Eat
+              </span>
             </span>
             <span className="container__span overflow-hidden pb-1.5">
-              <span className="heading__span--animate block">Enjoy</span>
+              <span className="heading__span--animate desktop:-translate-x-full desktop:opacity-0 desktop:motion-reduce:translate-x-0 block translate-x-0 opacity-100">
+                Enjoy
+              </span>
             </span>
           </h1>
 
           <p className="mt-4 overflow-hidden text-lg">
-            <span className="heading__p--animate block">
+            <span className="heading__p--animate desktop:translate-y-[120%] block">
               Explore the wonders of this nation
             </span>
           </p>
 
           <nav className="mt-5">
             <ul className="flex gap-1 overflow-hidden p-3">
-              <li className="heading__nav-links--animate">
+              <li className="heading__nav-links--animate translate-y-0 opacity-100">
                 <ButtonCtaLink to="" className="bg-cta">
                   Explore
                 </ButtonCtaLink>
               </li>
-              <li className="heading__nav-links--animate">
+              <li className="heading__nav-links--animate translate-y-0 opacity-100">
                 <ButtonCtaLink to="" className="bg-primary">
                   About
                 </ButtonCtaLink>
@@ -192,9 +230,7 @@ function Home() {
           </nav>
         </div>
       </section>
-      <ClientOnly>
-        <TouristSpots />
-      </ClientOnly>
+      <TouristSpots />
     </>
   );
 }
