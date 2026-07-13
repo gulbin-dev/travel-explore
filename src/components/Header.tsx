@@ -132,7 +132,7 @@ export default function Header() {
 
       <div
         ref={sidebarRef}
-        className="mobile-side-bar bg-primary/10 text-foreground-white tablet:hidden fixed top-0 left-0 z-10 h-screen w-full px-3 py-15 backdrop-blur-sm"
+        className="mobile-side-bar bg-font-dark/40 text-foreground-white tablet:hidden fixed top-0 left-0 z-10 h-screen w-full px-3 py-15 backdrop-blur-sm"
         style={{ transform: "translateX(100%)" }}
       >
         <nav className="mt-5">
