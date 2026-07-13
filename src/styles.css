@@ -28,7 +28,7 @@ p {
   --color-primary: #e1edf5;
   --color-font-dark: #1a1a1a;
   --color-cta: #04e0e0;
-  --text-size-xxl: clamp(4.8rem, 3vw, 5.6rem);
+  --text-size-xxl: clamp(3.8rem, 3vw, 4.6rem);
   --text-size-xl: clamp(2.2rem, 3vw, 2.6rem);
   --text-size-lg: clamp(1.8rem, 3vw, 2.2rem);
   --text-size-md: clamp(1.3rem, 3vw, 1.8rem);
@@ -37,6 +37,7 @@ p {
   --breakpoint-mobile-md: 430px;
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 1024px;
+  --breakpoint-desktop-large: 1080px;
 }
 
 @media screen and (prefers-color-scheme: dark) {
