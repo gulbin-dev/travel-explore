@@ -10,12 +10,13 @@ export default function TouristSpots() {
     () => {
       const mm = gsap.matchMedia();
       mm.add(mediaQueries, (context) => {
-        const { isDesktopScreen } = context.conditions ?? {};
+        const { isDesktopScreen, isReduceMotion } = context.conditions ?? {};
         if (!isDesktopScreen) return;
-        ScrollTrigger.defaults({ fastScrollEnd: true });
+        if (isReduceMotion) ScrollTrigger.defaults({ fastScrollEnd: true });
 
         gsap.to(".header__spanText_animate", {
           y: 0,
+          opacity: 1,
           scrollTrigger: {
             trigger: ".header__animate",
             start: "top 15%",
@@ -43,10 +44,10 @@ export default function TouristSpots() {
   return (
     <section
       ref={containerRef}
-      className="text-font-dark tourist-spot__section relative z-50 mt-5 min-h-screen"
+      className="text-font-dark tourist-spot__section relative z-50 mt-5 min-h-143.75"
     >
       <h2 className="header__animate text-size-xl desktop:text-size-xxl desktop:text-primary overflow-hidden px-3 py-1 duration-0!">
-        <span className="header__spanText_animate desktop:translate-y-[-115%] desktop:duration-0! desktop:block">
+        <span className="header__spanText_animate desktop:translate-y-[-115%] desktop:duration-0! desktop:opacity-100 desktop:motion-reduce:opacity-0 desktop:block desktop:motion-reduce:translate-y-0">
           Experience Majestic Feeling
         </span>
       </h2>
