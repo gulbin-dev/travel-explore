@@ -1,20 +1,61 @@
 "use client";
 
-import type { ItemProp } from "@utils/types";
 import { Image } from "@unpic/react";
 import { gsap, useGSAP, Observer, mediaQueries } from "@/utils/gsap";
 import { useRef, useState, useEffect } from "react";
+import LoadingChip from "@/components/UI/LoadingChip";
+import ErrorChip from "@/components/UI/ErrorChip";
+import { useAppDispatch, useAppSelector } from "@hooks/redux-hooks";
+import { setFullScreenView } from "@utils/redux-toolkit/feature/viewImageSlice";
+import useWindowSizeListener from "@/hooks/useWindowSizeListener";
 
-export default function Carousel({
-  item,
-  setIsFullScreen,
-}: {
-  item: ItemProp | null;
-  setIsFullScreen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+function CarouselImage({ src }: { src: string }) {
+  const [imageStatus, setImageStatus] = useState<
+    "loading" | "error" | "loaded"
+  >("loading");
+  return (
+    <div className="relative h-full w-full">
+      {/* Overlay chips based on state */}
+      {imageStatus === "loading" && <LoadingChip />}
+      {imageStatus === "error" && <ErrorChip />}
+
+      <Image
+        src={src}
+        layout="constrained"
+        height={900}
+        width={1280}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        breakpoints={[
+          380, 430, 560, 680, 768, 992, 1080, 1240, 1440, 2880, 3680,
+        ]}
+        className={`absolute inset-0 block h-full w-full object-cover transition-opacity duration-300 ${
+          imageStatus === "loaded"
+            ? "opacity-100"
+            : "pointer-events-none opacity-0"
+        }`}
+        onLoadStart={() => setImageStatus("loading")}
+        onError={() => setImageStatus("error")}
+        onLoad={() => setImageStatus("loaded")}
+      />
+    </div>
+  );
+}
+export default function Carousel() {
+  const [imageStatus, setImageStatus] = useState<
+    "loading" | "error" | "loaded"
+  >("loading");
+  const activeItem = useAppSelector((state) => state.isImageOnView.activeItem);
+  const fullScreenImage = useAppSelector(
+    (state) => state.isImageOnView.fullScreenImageSource,
+  );
+  const isFullScreen = useAppSelector(
+    (state) => state.isImageOnView.isFullScreen,
+  );
+  const dispatch = useAppDispatch();
+  const windowSize = useWindowSizeListener();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
-
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const scaleRef = useRef(1);
   const positionRef = useRef({ x: 0, y: 0 });
@@ -129,14 +170,15 @@ export default function Carousel({
     return applyPosition(nextScale, resolvedPosition);
   };
 
+  // toggle fullScreenImage payload
   useEffect(() => {
-    if (!fullscreenImage) {
+    if (!isFullScreen) {
       resetZoom();
-      setIsFullScreen(false);
-    } else {
-      setIsFullScreen(true);
+      dispatch(setFullScreenView(""));
+      return;
     }
-  }, [fullscreenImage]);
+    dispatch(setFullScreenView(fullScreenImage));
+  }, [isFullScreen]);
 
   const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
     if (event.touches.length === 2) {
@@ -153,7 +195,6 @@ export default function Carousel({
           y: (firstTouch.clientY + secondTouch.clientY) / 2,
         },
       };
-      event.preventDefault();
       return;
     }
 
@@ -165,7 +206,6 @@ export default function Carousel({
       if (isDoubleTap) {
         const nextScale = scaleRef.current > 1 ? 1 : 2;
         applyScale(nextScale, positionRef.current);
-        event.preventDefault();
       }
     }
   };
@@ -204,7 +244,6 @@ export default function Carousel({
       x: pinchStateRef.current.initialPosition.x + deltaX * (scaleRatio - 1),
       y: pinchStateRef.current.initialPosition.y + deltaY * (scaleRatio - 1),
     });
-    event.preventDefault();
   };
 
   const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
@@ -212,7 +251,6 @@ export default function Carousel({
       pinchStateRef.current = null;
     }
   };
-
   // Track index inside a ref to prevent component re-renders that reset GSAP
   const currentIndexRef = useRef(0);
   const isAnimating = useRef(false);
@@ -222,17 +260,18 @@ export default function Carousel({
 
   // Close fullscreen modal on Escape key press
   useEffect(() => {
-    if (!fullscreenImage) return;
+    if (!isFullScreen) return;
     const handleKeyDownFullScreen = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setFullscreenImage(null);
+      if (e.key === "Escape") dispatch(setFullScreenView(""));
     };
     window.addEventListener("keydown", handleKeyDownFullScreen);
     return () => window.removeEventListener("keydown", handleKeyDownFullScreen);
-  }, [fullscreenImage]);
+  }, [isFullScreen]);
 
+  // image drag animation on full screen view
   useGSAP(
     () => {
-      if (!fullscreenImage || !imageContainerRef.current) return;
+      if (!isFullScreen || !imageContainerRef.current) return;
 
       quickSetterXRef.current = gsap.quickSetter(
         imageContainerRef.current,
@@ -295,7 +334,7 @@ export default function Carousel({
         quickSetterYRef.current = null;
       };
     },
-    { dependencies: [fullscreenImage], scope: imageContainerRef },
+    { dependencies: [isFullScreen], scope: imageContainerRef },
   );
 
   // carousel animation
@@ -304,6 +343,9 @@ export default function Carousel({
       const mm = gsap.matchMedia();
       mm.add(mediaQueries, (context) => {
         const { isMobileScreen, isTabletScreen } = context.conditions ?? {};
+
+        if (!activeItem) return;
+        const currentIndex = activeItem.itemIndex;
         if (isMobileScreen || isTabletScreen) {
           const images =
             gsap.utils.toArray<HTMLLIElement>(".li--carousel-item");
@@ -312,20 +354,18 @@ export default function Carousel({
           if (images.length === 0) return;
 
           // Reset loop back to 0 if the item dataset changes entirely
-          currentIndexRef.current = 0;
-
+          currentIndexRef.current = currentIndex;
           // Layer all images on top of each other and hide the inactive ones off-screen
           gsap.set(images, {
             xPercent: 100,
           });
 
           // Reset indicator scales
-
           gsap.set(spans, { scale: 0.75 });
 
           // Explicitly show the first index components
-          gsap.set(images[0], { xPercent: 0 });
-          gsap.set(spans[0], { scale: 1.5 });
+          gsap.set(images[currentIndex], { xPercent: 0 });
+          gsap.set(spans[currentIndex], { scale: 1.5 });
 
           const totalItems = images.length;
 
@@ -335,7 +375,6 @@ export default function Carousel({
               return;
 
             isAnimating.current = true;
-            const currentIndex = currentIndexRef.current;
 
             const currentImg = images[currentIndex];
             const currentSpan = spans[currentIndex];
@@ -400,7 +439,6 @@ export default function Carousel({
             onLeft: () => playNext(1), // Swiping left moves to next item
             onRight: () => playNext(-1), // Swiping right moves to previous item
             tolerance: 10,
-            preventDefault: false, // Set to false to allow natural page scrolling
           });
           return () => {
             obs.kill();
@@ -409,7 +447,7 @@ export default function Carousel({
         }
       });
     },
-    { dependencies: [item], scope: containerRef },
+    { dependencies: [activeItem, windowSize], scope: containerRef },
   );
 
   return (
@@ -419,30 +457,18 @@ export default function Carousel({
         className="relative mt-10 aspect-video min-h-40 w-full overflow-hidden select-none"
       >
         <ul className="desktop:flex relative m-0 h-full w-full list-none p-0">
-          {item?.images.map((image, index) => (
+          {activeItem?.item.images.map((image, index) => (
             <li
               key={index}
-              className="li--carousel-item desktop:relative absolute inset-0 h-full w-full"
+              className="li--carousel-item desktop:relative absolute inset-0 h-full w-full place-content-center place-items-center"
             >
               <button
                 type="button"
-                onClick={() => setFullscreenImage(image.image)}
-                className="absolute inset-0 block h-full w-full focus:outline-none md:cursor-zoom-in"
+                onClick={() => dispatch(setFullScreenView(image.image))}
+                className="absolute inset-0 z-1 block h-full w-full focus:outline-none md:cursor-zoom-in"
                 aria-label="View image fullscreen"
               >
-                <Image
-                  src={image.image}
-                  layout="constrained"
-                  height={900}
-                  width={1280}
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                  breakpoints={[
-                    380, 430, 560, 680, 768, 992, 1080, 1240, 1440, 2880, 3680,
-                  ]}
-                  className="absolute inset-0 block h-full w-full object-cover"
-                />
+                <CarouselImage src={image.image} />
               </button>
             </li>
           ))}
@@ -450,7 +476,7 @@ export default function Carousel({
 
         <div className="desktop:hidden absolute bottom-0 left-0 z-10 block w-full">
           <ul className="flex justify-center gap-1.5 pb-3">
-            {item?.images.map((_, index) => (
+            {activeItem?.item.images.map((_, index) => (
               <li key={index}>
                 <button
                   type="button"
@@ -467,16 +493,13 @@ export default function Carousel({
       </div>
 
       {/* Fullscreen Overlay Backdrop Container */}
-      {fullscreenImage && (
-        <div
-          className="fixed inset-0 z-50 flex scrollbar-none items-center justify-center overflow-hidden bg-black/90 backdrop-blur-sm select-none"
-          onClick={() => setFullscreenImage(null)}
-        >
+      {isFullScreen && (
+        <div className="fixed inset-0 z-50 flex h-screen scrollbar-none items-center justify-center overflow-hidden bg-black/90 backdrop-blur-sm select-none">
           {/* Close Button */}
           <button
             type="button"
             className="fixed top-6 right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-xl font-bold text-white hover:text-gray-300 focus:outline-none"
-            onClick={() => setFullscreenImage(null)}
+            onClick={() => dispatch(setFullScreenView(""))}
             aria-label="Close fullscreen view"
           >
             ✕
@@ -496,17 +519,24 @@ export default function Carousel({
               transformOrigin: "center center",
             }}
           >
+            {imageStatus === "loading" && <LoadingChip />}
+            {imageStatus === "error" && <ErrorChip />}
             <Image
-              src={fullscreenImage}
+              src={fullScreenImage}
               layout="fullWidth"
               loading="lazy"
               decoding="async"
+              height={1024}
               alt="Fullscreen presentation layout view"
-              breakpoints={[
-                380, 430, 560, 680, 768, 992, 1080, 1240, 1440, 2880, 3680,
-              ]}
-              className="h-full w-full object-cover shadow-2xl"
+              className={`absolute block h-full w-full object-contain transition-opacity duration-300 ${
+                imageStatus === "loaded"
+                  ? "opacity-100"
+                  : "pointer-events-none opacity-0"
+              }`}
               draggable="false"
+              onLoadStart={() => setImageStatus("loading")}
+              onError={() => setImageStatus("error")}
+              onLoad={() => setImageStatus("loaded")}
             />
           </div>
         </div>
