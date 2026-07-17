@@ -1,7 +1,7 @@
 import { Image } from "@unpic/react";
 import type { ImageProps } from "@unpic/react";
 import { useState } from "react";
-import { LoaderThumbnailIcon, ErrorThumbnailIcon } from "@/utils/icons";
+import { LoaderIcon, ErrorThumbnailIcon } from "@/utils/icons";
 
 type CardThumbnailProps = Omit<ImageProps, "layout" | "width" | "height"> & {
   src?: string;
@@ -12,7 +12,7 @@ export function CardThumbnail({ src }: CardThumbnailProps) {
     "loading",
   );
 
-  imageStatus === "loading" ? { LoaderThumbnailIcon } : { ErrorThumbnailIcon };
+  imageStatus === "loading" ? { LoaderIcon } : { ErrorThumbnailIcon };
   return (
     <Image
       src={src}
