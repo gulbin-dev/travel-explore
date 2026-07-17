@@ -1,5 +1,5 @@
 import Button from "@/components/UI/Button";
-import { memo, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { gsap, useGSAP } from "@utils/gsap";
 import { FacebookIcon, InstagramIcon, LinkIcon } from "@utils/icons";
@@ -45,7 +45,7 @@ function ShareableLinks() {
     <div className="relative w-1/3">
       <Button
         onClick={() => setIsToggledShareLinks((prev) => !prev)}
-        className="bg-primary relative z-1 border"
+        className="bg-primary relative z-1"
       >
         Share
       </Button>
@@ -53,7 +53,7 @@ function ShareableLinks() {
       <ul
         ref={shareable__ul}
         aria-label="Social links"
-        className="bg-primary/10 absolute bottom-5 left-0 flex gap-2.5 rounded-2xl p-3 opacity-0 backdrop-blur-2xl"
+        className="bg-font-dark/70 absolute bottom-5 left-0 z-10 flex gap-2.5 rounded-2xl p-3 opacity-0 backdrop-blur-lg"
       >
         <li>
           <Link to="/">
@@ -73,4 +73,4 @@ function ShareableLinks() {
   );
 }
 
-export default memo(ShareableLinks);
+export default ShareableLinks;

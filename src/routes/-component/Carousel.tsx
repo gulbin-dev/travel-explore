@@ -3,18 +3,17 @@
 import { Image } from "@unpic/react";
 import { gsap, useGSAP, Observer, mediaQueries } from "@/utils/gsap";
 import { useRef, useState, useEffect } from "react";
-import LoadingChip from "@/components/UI/LoadingChip";
-import ErrorChip from "@/components/UI/ErrorChip";
+import { ErrorChip, LoadingChip } from "@/components/UI/StateChips";
 import { useAppDispatch, useAppSelector } from "@hooks/redux-hooks";
 import { setFullScreenView } from "@utils/redux-toolkit/feature/viewImageSlice";
 import useWindowSizeListener from "@/hooks/useWindowSizeListener";
+import useImageState from "@/hooks/useImageState";
 
 function CarouselImage({ src }: { src: string }) {
-  const [imageStatus, setImageStatus] = useState<
-    "loading" | "error" | "loaded"
-  >("loading");
+  const { imageStatus, setImageStatus } = useImageState();
+
   return (
-    <div className="relative h-full w-full">
+    <div className="relative flex h-full w-full">
       {/* Overlay chips based on state */}
       {imageStatus === "loading" && <LoadingChip />}
       {imageStatus === "error" && <ErrorChip />}

@@ -25,6 +25,7 @@ export default function Header() {
     document.body.style.overflow = isSidebarOpen ? "hidden" : "auto";
   }, [isSidebarOpen]);
 
+  // .menu-icon__span animation
   useGSAP(
     () => {
       const slices = gsap.utils.toArray<HTMLElement>(".menu-icon__span");
@@ -46,9 +47,13 @@ export default function Header() {
     { scope: headerRef },
   );
 
+  // toggle .menu-icon__span animation playback
   useGSAP(() => {
-    if (isSidebarOpen) tl.current?.play();
-    else tl.current?.reverse();
+    if (isSidebarOpen) {
+      tl.current?.play();
+      return;
+    }
+    tl.current?.reverse();
   }, [isSidebarOpen]);
 
   // Toggle handler
@@ -120,10 +125,14 @@ export default function Header() {
           <nav className="desktop:block desktop:text-size-sm text-primary hidden font-semibold">
             <ul className="flex gap-3">
               <li>
-                <Link to="/">Home</Link>
+                <Link to="/" className="hover:text-cta-hover">
+                  Home
+                </Link>
               </li>
               <li>
-                <Link to="/about">About</Link>
+                <Link to="/about" className="hover:text-cta-hover">
+                  About
+                </Link>
               </li>
             </ul>
           </nav>
@@ -136,9 +145,13 @@ export default function Header() {
         style={{ transform: "translateX(100%)" }}
       >
         <nav className="mt-5">
-          <ul className="text-size-xl text-primary flex flex-col items-end gap-3 font-bold">
+          <ul className="text-size-xl text-primary hover:text-cta-hover flex flex-col items-end gap-3 font-bold">
             <li>
-              <a href="/" onClick={(e) => handleSidebarNavigation(e, "/")}>
+              <a
+                href="/"
+                onClick={(e) => handleSidebarNavigation(e, "/")}
+                className="hover:text-cta-hover"
+              >
                 Home
               </a>
             </li>
@@ -146,6 +159,7 @@ export default function Header() {
               <a
                 href="/about"
                 onClick={(e) => handleSidebarNavigation(e, "/about")}
+                className="hover:text-cta-hover"
               >
                 About
               </a>

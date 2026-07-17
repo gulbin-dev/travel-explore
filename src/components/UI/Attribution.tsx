@@ -1,3 +1,9 @@
+/**
+ *
+ * @param param0 tailwind class styles
+ * @param param1 component content
+ * @returns UI component for image attribution
+ */
 export default function Attribution({
   className,
   children,
