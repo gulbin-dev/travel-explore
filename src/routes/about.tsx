@@ -12,15 +12,15 @@ function About() {
   return (
     <>
       <section className="relative flex min-h-screen flex-col items-center gap-2">
-        <div className="absolute inset-0">
-          <div className="bg-font-dark absolute inset-0 z-1"></div>
+        <div className="absolute inset-0 flex">
+          <div className="bg-font-dark/10 absolute inset-0 z-2"></div>
           <img
             src="/footer-1440.webp"
             srcSet="/footer-480.webp 480w, /footer-800.webp 800w, /footer-1440.webp 1440w, /footer-1440@2x.webp 2880w"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 100vw"
             loading="lazy"
             alt=""
-            className="absolute inset-0 z-2 h-full w-full object-cover blur-[2px]"
+            className="absolute inset-0 z-1 h-full w-full object-cover blur-[2px]"
           />
           <Attribution>
             <p>

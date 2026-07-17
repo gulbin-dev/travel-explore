@@ -5,7 +5,7 @@ export default function ErrorBoundary({ error }: { error: Error }) {
       <p>{error.message}</p>
       <button
         onClick={() => window.location.reload()}
-        className="text-primary bg-cta rounded-2xl p-3"
+        className="text-font-dark bg-cta rounded-2xl p-3"
       >
         Refresh Page
       </button>
