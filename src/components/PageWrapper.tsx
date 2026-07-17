@@ -17,6 +17,7 @@ export default function PageWrapper({
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  // ScrollSmoothen initialization
   useGSAP(
     () => {
       ScrollSmoother.create({
