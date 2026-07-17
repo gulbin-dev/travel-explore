@@ -1,6 +1,6 @@
 import { gsap, useGSAP, mediaQueries, ScrollTrigger } from "@utils/gsap";
 import { createFileRoute } from "@tanstack/react-router";
-import ButtonCtaLink from "@/components/UI/ButtonCtaLink";
+import ButtonAnchorLink from "@/components/UI/ButtonAnchorLink";
 import TouristSpots from "./-component/TouristSpots";
 import Attribution from "@components/UI/Attribution";
 import { useEffect, useRef } from "react";
@@ -217,14 +217,14 @@ function Home() {
           <nav className="mt-5">
             <ul className="flex gap-1 overflow-hidden p-3">
               <li className="heading__nav-links--animate translate-y-0 opacity-100">
-                <ButtonCtaLink to="" className="bg-cta">
+                <ButtonAnchorLink to="" className="bg-cta">
                   Explore
-                </ButtonCtaLink>
+                </ButtonAnchorLink>
               </li>
               <li className="heading__nav-links--animate translate-y-0 opacity-100">
-                <ButtonCtaLink to="" className="bg-primary">
+                <ButtonAnchorLink to="" className="bg-primary">
                   About
-                </ButtonCtaLink>
+                </ButtonAnchorLink>
               </li>
             </ul>
           </nav>
