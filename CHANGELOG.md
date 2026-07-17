@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/gulbin-dev/travel-explore/compare/v1.2.0...v1.2.1) (2026-07-17)
+
+
+### Bug Fixes
+
+* end trigger timing on header when scrolling on TouristSpots ([#7](https://github.com/gulbin-dev/travel-explore/issues/7)) ([816e8fd](https://github.com/gulbin-dev/travel-explore/commit/816e8fd7939bd4f7338cd1d44cba129a4cf717d9))
+
 ## [1.2.0](https://github.com/gulbin-dev/travel-explore/compare/v1.1.0...v1.2.0) (2026-07-13)
 
 
