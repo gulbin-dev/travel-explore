@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import Attribution from "@components/UI/Attribution";
 import { useEffect } from "react";
 import Card from "@/components/UI/Card";
+import { WebsiteIcon, GithubIcon } from "@/utils/icons";
 
 export const Route = createFileRoute("/about")({ component: About });
 
@@ -47,15 +48,19 @@ function About() {
             Build by front-end developer, Joshua Glenn R. Gulbin
           </p>
           <div className="pt-5">
-            <ul className="text-font-dark flex flex-wrap justify-center gap-3 font-bold">
+            <ul className="text-cta flex flex-wrap justify-center gap-3 font-bold">
               <li>
-                <Card>
-                  <p>Portfolio Website</p>
+                <Card className="bg-font-dark/40! hover:bg-font-dark/20!">
+                  <p className="flex items-center gap-1.5">
+                    <span>{WebsiteIcon}</span>Portfolio Website
+                  </p>
                 </Card>
               </li>
               <li>
-                <Card>
-                  <p>Github</p>
+                <Card className="bg-font-dark/40! hover:bg-font-dark/20!">
+                  <p className="flex items-center gap-1.5">
+                    <span>{GithubIcon}</span>Github
+                  </p>
                 </Card>
               </li>
             </ul>
