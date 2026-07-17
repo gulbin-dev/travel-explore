@@ -5,6 +5,7 @@ import { setMapOnView } from "@utils/redux-toolkit/feature/viewMapSlice";
 import type { ItemProp } from "@utils/types";
 import { gsap, useGSAP } from "@/utils/gsap";
 import { useEffect, useRef, useState } from "react";
+import { XButton } from "@utils/icons";
 
 function MapWrapper({
   location,
@@ -101,9 +102,9 @@ function MapWrapper({
       />
       <button
         onClick={onClose}
-        className="text-size-xl bg-primary/10 absolute top-0 right-0 z-11 rounded-2xl p-3 backdrop-blur-sm"
+        className="desktop:hidden bg-primary/10 absolute top-0 right-0 z-11 block rounded-2xl p-3 backdrop-blur-sm"
       >
-        X
+        {XButton}
       </button>
       <div
         ref={contentRef}

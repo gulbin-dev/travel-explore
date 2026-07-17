@@ -3,6 +3,7 @@ import {
   InstagramIcon,
   LinkIcon,
   LocataionPinIcon,
+  XButton,
 } from "@utils/icons";
 import { Link } from "@tanstack/react-router";
 import Button from "@components/UI/Button";
@@ -104,7 +105,7 @@ export default function ImageViewerModal() {
         onClick={() => dispatch(setImageOnView(null))}
         className="pointer-events-auto fixed top-0 right-0 col-start-4 justify-self-end p-4 text-4xl font-bold text-white hover:text-gray-300"
       >
-        X
+        {XButton}
       </button>
       <Carousel />
       <div className="text-primary relative col-span-full flex flex-1 flex-col">
