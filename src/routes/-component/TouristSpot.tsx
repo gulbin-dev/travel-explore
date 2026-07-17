@@ -304,7 +304,7 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
           <Card
             role="region"
             aria-labelledby="name"
-            className="card__div desktop:bg-primary/10 desktop:backdrop-blur-2xl desktop:p-3 desktop:rounded-2xl desktop:text-primary desktop:opacity-0 duration-0! will-change-transform"
+            className="card__div desktop:bg-primary/10 desktop:backdrop-blur-2xl desktop:p-3 desktop:rounded-2xl desktop:text-primary desktop:opacity-0 duration-0!"
           >
             <header className="">
               <div className="overflow-hidden">
