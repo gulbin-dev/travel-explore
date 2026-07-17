@@ -39,6 +39,7 @@ describe("image view reducer", () => {
       isToggled: false,
       isFullScreen: false,
       activeItem: null,
+      fullScreenImageSource: "",
     });
   });
 
@@ -48,28 +49,35 @@ describe("image view reducer", () => {
     expect(state.isToggled).toBe(true);
     expect(state.activeItem).toEqual(mockItem);
     expect(state.isFullScreen).toBe(false);
+    expect(state.fullScreenImageSource).toBe("");
   });
 
-  it("clears the image viewer state when the payload is null", () => {
+  it("resets the toggle state when the payload is null", () => {
     const state = reducer(
       {
         isToggled: true,
         isFullScreen: true,
         activeItem: mockItem,
+        fullScreenImageSource: mockItem.item.images[0].image,
       },
       setImageOnView(null),
     );
 
     expect(state.isToggled).toBe(false);
-    expect(state.activeItem).toBeNull();
     expect(state.isFullScreen).toBe(true);
+    expect(state.activeItem).toBeNull();
+    expect(state.fullScreenImageSource).toBe(mockItem.item.images[0].image);
   });
 
-  it("enables fullscreen mode for the selected item", () => {
-    const state = reducer(undefined, setFullScreenView(mockItem));
+  it("enables fullscreen mode for the provided image source", () => {
+    const state = reducer(
+      undefined,
+      setFullScreenView(mockItem.item.images[0].image),
+    );
 
     expect(state.isFullScreen).toBe(true);
-    expect(state.activeItem).toEqual(mockItem);
+    expect(state.activeItem).toBeNull();
     expect(state.isToggled).toBe(false);
+    expect(state.fullScreenImageSource).toBe(mockItem.item.images[0].image);
   });
 });
