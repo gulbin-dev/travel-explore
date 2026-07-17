@@ -11,9 +11,12 @@ interface CardProps extends ComponentPropsWithoutRef<"div"> {
  * @param params all other attributes on `div` element
  * @returns
  */
-export default function Card({ children, ...props }: CardProps) {
+export default function Card({ children, className, ...props }: CardProps) {
   return (
-    <div className="bg-primary/10 rounded-2xl p-3 backdrop-blur-xs" {...props}>
+    <div
+      className={`bg-primary/10 rounded-2xl p-3 backdrop-blur-xs ${className}`}
+      {...props}
+    >
       {children}
     </div>
   );
