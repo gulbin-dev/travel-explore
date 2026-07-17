@@ -14,6 +14,7 @@ export default function TouristSpots() {
         if (!isDesktopScreen) return;
         if (isReduceMotion) ScrollTrigger.defaults({ fastScrollEnd: true });
 
+        // .header__spanText_animate animation on view
         gsap.to(".header__spanText_animate", {
           y: 0,
           opacity: 1,
@@ -25,17 +26,14 @@ export default function TouristSpots() {
             scrub: true,
           },
         });
-        const touristSpots =
-          gsap.utils.toArray<HTMLLIElement>(".container__div");
-        const lastLi = touristSpots[touristSpots.length - 1];
 
+        // .header__spanText_animate pin
         ScrollTrigger.create({
           trigger: ".header__animate",
           start: "top 15%",
           pin: true,
           pinSpacing: false,
-          endTrigger: lastLi,
-          end: "bottom top",
+          end: () => ScrollTrigger.maxScroll(window) * 0.85, // use 85% window scroll progress to trigger end pin
         });
       });
     },
