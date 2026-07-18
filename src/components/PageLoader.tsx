@@ -3,11 +3,11 @@ export default function PageLoader() {
     <div
       role="status"
       aria-live="polite"
-      className="bg-primary fixed inset-0 z-50 flex h-screen w-screen items-center justify-center overflow-hidden px-6"
+      className="bg-primary fixed inset-0 z-50 flex h-screen w-screen items-center justify-center overflow-hidden"
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(4,224,224,0.22),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(26,26,26,0.12),transparent_40%)]" />
 
-      <div className="relative flex w-full max-w-md flex-col items-center rounded-4xl border border-white/70 bg-white/75 px-8 py-10 text-center shadow-[0_24px_70px_rgba(26,26,26,0.12)] backdrop-blur-xl">
+      <div className="tablet:max-w-md tablet:rounded-4xl relative flex w-full flex-col items-center border border-white/70 bg-white/75 px-8 py-10 text-center shadow-[0_24px_70px_rgba(26,26,26,0.12)] backdrop-blur-xl">
         <div className="loader-ring border-cta/30 mb-6 flex h-20 w-20 items-center justify-center rounded-full border-4">
           <div className="loader-dot bg-cta/90 h-10 w-10 rounded-full" />
         </div>
