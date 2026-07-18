@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/gulbin-dev/travel-explore/compare/v1.3.0...v1.4.0) (2026-07-18)
+
+
+### Features
+
+* auto-generate sitemap on build-time ([#12](https://github.com/gulbin-dev/travel-explore/issues/12)) ([6a131e9](https://github.com/gulbin-dev/travel-explore/commit/6a131e93af654aab2bd1e01543011fc670d3aeae))
+
 ## [1.3.0](https://github.com/gulbin-dev/travel-explore/compare/v1.2.1...v1.3.0) (2026-07-18)
 
 
