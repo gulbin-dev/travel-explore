@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/gulbin-dev/travel-explore/compare/v1.2.1...v1.3.0) (2026-07-18)
+
+
+### Features
+
+* new routes and enhance responsive UI on image loading and error display on images ([#10](https://github.com/gulbin-dev/travel-explore/issues/10)) ([0194474](https://github.com/gulbin-dev/travel-explore/commit/0194474170a5dcba08ff11fa1c4a30598734b0f2))
+
 ## [1.2.1](https://github.com/gulbin-dev/travel-explore/compare/v1.2.0...v1.2.1) (2026-07-17)
 
 
