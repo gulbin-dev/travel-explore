@@ -9,13 +9,15 @@ import { setImageOnView } from "@utils/redux-toolkit/feature/viewImageSlice";
 import { setMapOnView } from "@utils/redux-toolkit/feature/viewMapSlice";
 import type { ItemProp } from "@utils/types";
 import { gsap, useGSAP, mediaQueries, ScrollTrigger } from "@utils/gsap";
-import { LocataionPinIcon } from "@utils/icons";
+import { LocataionPinIcon, LoaderIcon, ErrorThumbnailIcon } from "@utils/icons";
 import ShareableLinks from "./ShareableLinks";
+import useImageState from "@/hooks/useImageState";
 
 export default function TouristSpot({ item }: { item: ItemProp }) {
+  const { imageStatus, setImageStatus } = useImageState();
   const containerRef = useRef<HTMLLIElement | null>(null);
-
   const dispatch = useAppDispatch();
+
   // Scroll animation
   useGSAP(
     () => {
@@ -230,6 +232,12 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
           <div className="Parallax-container__div--clip desktop:relative desktop:row-start-3 desktop:col-start-1 desktop:col-span-full desktop:duration-0 h-full w-full overflow-hidden">
             <div className="div__ParallaxView desktop:relative desktop:opacity-0 absolute inset-0 h-full overflow-hidden">
               <div className="relative h-[120%] w-[120%]">
+                {imageStatus === "loading" && (
+                  <LoaderIcon size={24} color="var(--color-cta)" />
+                )}
+                {imageStatus === "error" && (
+                  <ErrorThumbnailIcon size={90} color="white" />
+                )}
                 <Image
                   src={item.images[0].image}
                   layout="constrained"
@@ -242,6 +250,9 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
                     380, 430, 560, 680, 768, 992, 1080, 1240, 1440, 2880, 3680,
                   ]}
                   className="img--parallax absolute inset-0 h-full w-full object-cover"
+                  onLoadStart={() => setImageStatus("loading")}
+                  onError={() => setImageStatus("error")}
+                  onLoad={() => setImageStatus("loaded")}
                 />
               </div>
 
