@@ -8,6 +8,7 @@ import {
   IconPhotoAlt,
   IconX,
   IconWorld,
+  IconMailFilled,
 } from "@tabler/icons-react";
 
 export const FacebookIcon = function FacebookIcon() {
@@ -18,15 +19,22 @@ export const InstagramIcon = function InstagramIcon() {
   return <img src={Instagram} alt="Share tourist site on Instagram" />;
 };
 
-export const LinkIcon = <IconLink size={48} color="black" />;
-export const LoaderIcon = <IconLoader4 size={24} color="var(--color-cta)" />;
-export const ErrorThumbnailIcon = <IconPhotoAlt size={90} color="white" />;
-export const XButton = <IconX size={24} color="white" />;
-export const WebsiteIcon = <IconWorld size={24} color="var(--color-cta)" />;
-export const GithubIcon = (
-  <IconBrandGithubFilled size={24} color="var(--color-cta)" />
-);
+const WebsiteIcon = IconWorld;
+const LinkIcon = IconLink;
+const LoaderIcon = IconLoader4;
+const ErrorThumbnailIcon = IconPhotoAlt;
+const XButton = IconX;
+const GithubIcon = IconBrandGithubFilled;
+const LocataionPinIcon = IconMapPinFilled;
+const EmailIcon = IconMailFilled;
 
-export const LocataionPinIcon = (
-  <IconMapPinFilled size={24} color="var(--color-cta)" />
-);
+export {
+  GithubIcon,
+  LinkIcon,
+  LocataionPinIcon,
+  LoaderIcon,
+  ErrorThumbnailIcon,
+  XButton,
+  WebsiteIcon,
+  EmailIcon,
+};
