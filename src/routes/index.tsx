@@ -160,7 +160,7 @@ function Home() {
     { dependencies: [], scope: containerRef },
   );
 
-  // responsive scroll navigation
+  // responsive scroll to navigation
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
@@ -260,11 +260,11 @@ function Home() {
           </p>
 
           <nav className="mt-5">
-            <ul className="flex items-center gap-1 overflow-hidden p-3">
+            <ul className="relative flex items-end gap-1 overflow-hidden p-3">
               <li className="heading__nav-links--animate translate-y-0 opacity-100">
                 <Button onClick={handleScrollNavigate}>Explore</Button>
               </li>
-              <li className="heading__nav-links--animate translate-y-0 opacity-100">
+              <li className="heading__nav-links--animate flex translate-y-0 opacity-100">
                 <ButtonAnchorLink to="/about" className="bg-primary">
                   About
                 </ButtonAnchorLink>
