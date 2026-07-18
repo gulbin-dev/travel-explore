@@ -316,7 +316,9 @@ export default function TouristSpot({ item }: { item: ItemProp }) {
               </h2>
               <div className="bg-cta desktop:hidden my-1 block h-0.5 rounded-2xl"></div>
               <p className="flex gap-0.5 pt-1">
-                <span className="h-fit">{LocataionPinIcon}</span>
+                <span className="h-fit">
+                  <LocataionPinIcon size={24} color="var(--color-cta)" />
+                </span>
                 {item.details.location}
               </p>
             </header>

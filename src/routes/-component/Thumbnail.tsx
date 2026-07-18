@@ -12,7 +12,11 @@ export function CardThumbnail({ src }: CardThumbnailProps) {
     "loading",
   );
 
-  imageStatus === "loading" ? { LoaderIcon } : { ErrorThumbnailIcon };
+  imageStatus === "loading" ? (
+    <LoaderIcon size={24} color="var(--color-cta)" />
+  ) : (
+    <ErrorThumbnailIcon size={90} color="white" />
+  );
   return (
     <Image
       src={src}

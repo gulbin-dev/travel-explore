@@ -502,7 +502,7 @@ export default function Carousel() {
             onClick={() => dispatch(setFullScreenView(""))}
             aria-label="Close fullscreen view"
           >
-            {XButton}
+            <XButton size={24} color="white" />
           </button>
 
           {/* Image Container */}

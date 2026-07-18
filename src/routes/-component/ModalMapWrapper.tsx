@@ -104,7 +104,7 @@ function MapWrapper({
         onClick={onClose}
         className="desktop:hidden bg-primary/10 absolute top-0 right-0 z-11 block rounded-2xl p-3 backdrop-blur-sm"
       >
-        {XButton}
+        <XButton size={24} color="white" />
       </button>
       <div
         ref={contentRef}

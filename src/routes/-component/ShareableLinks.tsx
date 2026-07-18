@@ -45,7 +45,7 @@ function ShareableLinks() {
     <div className="relative w-1/3">
       <Button
         onClick={() => setIsToggledShareLinks((prev) => !prev)}
-        className="bg-primary relative z-1"
+        className="bg-primary desktop:border-0 relative z-1 border"
       >
         Share
       </Button>
@@ -66,7 +66,9 @@ function ShareableLinks() {
           </Link>
         </li>
         <li>
-          <Link to="/">{LinkIcon}</Link>
+          <Link to="/">
+            <LinkIcon size={48} color="black" />
+          </Link>
         </li>
       </ul>
     </div>
