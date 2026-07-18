@@ -2,6 +2,7 @@
 
 import { Image } from "@unpic/react";
 import { gsap, useGSAP, Observer, mediaQueries } from "@/utils/gsap";
+import { XButton } from "@/utils/icons";
 import { useRef, useState, useEffect } from "react";
 import { ErrorChip, LoadingChip } from "@/components/UI/StateChips";
 import { useAppDispatch, useAppSelector } from "@hooks/redux-hooks";
@@ -501,7 +502,7 @@ export default function Carousel() {
             onClick={() => dispatch(setFullScreenView(""))}
             aria-label="Close fullscreen view"
           >
-            ✕
+            <XButton size={24} color="white" />
           </button>
 
           {/* Image Container */}

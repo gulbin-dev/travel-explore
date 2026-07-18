@@ -3,6 +3,7 @@ import {
   InstagramIcon,
   LinkIcon,
   LocataionPinIcon,
+  XButton,
 } from "@utils/icons";
 import { Link } from "@tanstack/react-router";
 import Button from "@components/UI/Button";
@@ -104,7 +105,7 @@ export default function ImageViewerModal() {
         onClick={() => dispatch(setImageOnView(null))}
         className="pointer-events-auto fixed top-0 right-0 col-start-4 justify-self-end p-4 text-4xl font-bold text-white hover:text-gray-300"
       >
-        X
+        <XButton size={24} color="white" />
       </button>
       <Carousel />
       <div className="text-primary relative col-span-full flex flex-1 flex-col">
@@ -118,7 +119,9 @@ export default function ImageViewerModal() {
           </h2>
           <div className="bg-cta desktop:hidden my-1 block h-0.5 rounded-2xl"></div>
           <p className="flex gap-0.5 pt-1">
-            <span className="text-cta h-fit">{LocataionPinIcon}</span>
+            <span className="text-cta h-fit">
+              <LocataionPinIcon size={24} color="var(--color-cta)" />
+            </span>
             {activeItem?.item.details.location}
           </p>
         </header>
@@ -148,7 +151,9 @@ export default function ImageViewerModal() {
               </Link>
             </li>
             <li>
-              <Link to="/">{LinkIcon}</Link>
+              <Link to="/">
+                <LinkIcon size={48} color="black" />
+              </Link>
             </li>
           </ul>
         </footer>

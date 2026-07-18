@@ -101,15 +101,18 @@ export default function Header() {
         ref={headerRef}
         className="fixed top-0 left-0 z-20 h-full max-h-12.5 w-full px-3 py-1.25"
       >
-        <div className="bg-primary/10 absolute top-0 left-0 -z-1 h-full w-full shadow-[0px_-4px_4px_rgba(225,225,225,0.25)_inset] backdrop-blur-xs"></div>
+        <div className="bg-font-dark/30 absolute top-0 left-0 -z-1 h-full w-full shadow-[0px_-4px_4px_rgba(225,225,225,0.25)_inset] backdrop-blur-xs"></div>
         <div className="flex w-full max-w-180 items-center justify-between place-self-center">
-          <img
-            src="/logo-mobile.png"
-            alt=""
-            width={80}
-            height={80}
-            className="aspect-square"
-          />
+          <Link to="/">
+            <img
+              src="/logo-mobile.png"
+              alt=""
+              width={80}
+              height={80}
+              className="aspect-square"
+            />
+          </Link>
+
           <button
             onClick={toggleSideBarHandler}
             className="desktop:hidden flex max-h-6 flex-col justify-center gap-1.5"
@@ -141,7 +144,7 @@ export default function Header() {
 
       <div
         ref={sidebarRef}
-        className="mobile-side-bar bg-font-dark/40 text-foreground-white tablet:hidden fixed top-0 left-0 z-10 h-screen w-full px-3 py-15 backdrop-blur-sm"
+        className="mobile-side-bar bg-font-dark/40 text-foreground-white desktop:hidden fixed top-0 left-0 z-10 h-screen w-full px-3 py-15 backdrop-blur-sm"
         style={{ transform: "translateX(100%)" }}
       >
         <nav className="mt-5">

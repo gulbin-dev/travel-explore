@@ -11,14 +11,12 @@ export function getRouter() {
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
     defaultNotFoundComponent: () => {
-      return <NotFoundPage />;
+      <NotFoundPage />;
     },
     defaultErrorComponent: ({ error }) => <ErrorBoundary error={error} />,
     defaultPendingComponent: () => <PageLoader />,
-    // Shows the loader immediately if a page transition takes any time at all
-    defaultPendingMs: 0,
-
-    defaultPendingMinMs: 0,
+    defaultPendingMs: 1000,
+    defaultPendingMinMs: 500,
   });
 
   return router;

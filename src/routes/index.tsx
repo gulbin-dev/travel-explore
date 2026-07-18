@@ -4,12 +4,13 @@ import ButtonAnchorLink from "@/components/UI/ButtonAnchorLink";
 import TouristSpots from "./-component/TouristSpots";
 import Attribution from "@components/UI/Attribution";
 import { useEffect, useRef } from "react";
+import Button from "@/components/UI/Button";
 
 export const Route = createFileRoute("/")({ component: Home });
 
 function Home() {
   const containerRef = useRef<HTMLDivElement | null>(null);
-
+  const scrollMultiplierRef = useRef<number>(-1.2);
   // reset scroll when navigate to home page to fix broken animation
   // when navigated from abmout page with scrolled content
   useEffect(() => {
@@ -26,6 +27,7 @@ function Home() {
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
+  // animations
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
@@ -158,6 +160,49 @@ function Home() {
     { dependencies: [], scope: containerRef },
   );
 
+  // responsive scroll to navigation
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add(mediaQueries, (context) => {
+        const { isDesktopScreen, isMobileScreen, isTabletScreen } =
+          context.conditions ?? {};
+
+        // --- SET RESPONSIVE SCROLL CONFIGURATION ---
+        if (isDesktopScreen) {
+          scrollMultiplierRef.current = -1.2; // Desktop offset multiplier
+        } else if (isTabletScreen) {
+          scrollMultiplierRef.current = -0.8; // Tablet offset multiplier
+        } else if (isMobileScreen) {
+          scrollMultiplierRef.current = -0.6; // Mobile offset multiplier (or set a fixed pixel number like -60)
+        }
+
+        // ... rest of your existing smallScreenDisplay() and Desktop animations
+      });
+    },
+    { dependencies: [], scope: containerRef },
+  );
+
+  const { contextSafe } = useGSAP({ scope: containerRef });
+
+  const handleScrollNavigate = contextSafe(() => {
+    // Uses the responsive multiplier determined by your matchMedia hook
+    const offsetY = Math.round(
+      window.innerHeight * scrollMultiplierRef.current,
+    );
+
+    gsap.to(window, {
+      duration: 0.8,
+      scrollTo: {
+        y: "#explore-tourist-spots",
+        offsetY: offsetY,
+      },
+      ease: "power3.out", // Added smooth easing for better user experience
+      autoKill: false,
+    });
+  });
+
   return (
     <>
       <section ref={containerRef} className="relative flex h-screen px-3">
@@ -215,14 +260,12 @@ function Home() {
           </p>
 
           <nav className="mt-5">
-            <ul className="flex gap-1 overflow-hidden p-3">
+            <ul className="relative flex items-end gap-1 overflow-hidden p-3">
               <li className="heading__nav-links--animate translate-y-0 opacity-100">
-                <ButtonAnchorLink to="" className="bg-cta">
-                  Explore
-                </ButtonAnchorLink>
+                <Button onClick={handleScrollNavigate}>Explore</Button>
               </li>
-              <li className="heading__nav-links--animate translate-y-0 opacity-100">
-                <ButtonAnchorLink to="" className="bg-primary">
+              <li className="heading__nav-links--animate flex translate-y-0 opacity-100">
+                <ButtonAnchorLink to="/about" className="bg-primary">
                   About
                 </ButtonAnchorLink>
               </li>

@@ -1,4 +1,9 @@
 import { Link } from "@tanstack/react-router";
+import type { LinkProps } from "@tanstack/react-router";
+
+interface ButtonAnchorLinkProps extends LinkProps {
+  className?: string;
+}
 
 /**
  *
@@ -11,15 +16,11 @@ export default function ButtonAnchorLink({
   className,
   to,
   children,
-}: {
-  className: string;
-  to: string;
-  children: React.ReactNode;
-}) {
+}: ButtonAnchorLinkProps) {
   return (
     <Link
       to={to}
-      className={`text-font-dark hover:bg-cta-hover rounded-2xl px-3 py-1.5 font-bold ${className}`}
+      className={`text-font-dark hover:bg-cta-hover rounded-2xl px-3 py-1.5 font-bold transition-colors ${className}`}
     >
       {children}
     </Link>

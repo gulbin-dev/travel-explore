@@ -1,4 +1,9 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  Outlet,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
@@ -6,6 +11,8 @@ import appCss from "../styles.css?url";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
 import PageWrapper from "@components/PageWrapper";
+import { useEffect, useState } from "react";
+import PageLoader from "@/components/PageLoader";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -66,18 +73,43 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 });
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument() {
+  const [isPageReady, setIsPageReady] = useState(false);
+
+  useEffect(() => {
+    if (document.readyState === "complete") {
+      setIsPageReady(true);
+      return;
+    }
+
+    const handleLoad = () => {
+      setIsPageReady(true);
+    };
+
+    window.addEventListener("load", handleLoad, { once: true });
+
+    return () => {
+      window.removeEventListener("load", handleLoad);
+    };
+  }, []);
+
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
-        <Header />
-        <PageWrapper>
-          {children}
-          <Footer />
-        </PageWrapper>
+        {!isPageReady ? (
+          <PageLoader />
+        ) : (
+          <>
+            <Header />
+            <PageWrapper>
+              <Outlet />
+              <Footer />
+            </PageWrapper>
+          </>
+        )}
 
         <TanStackDevtools
           config={{

@@ -13,7 +13,7 @@ export function LoadingChip() {
     <div className="bg-primary/10 text-primary relative h-fit w-fit shrink place-content-center place-self-center rounded-2xl p-1 backdrop-blur-sm">
       <p className="flex max-w-fit gap-1">
         <span className="inline-block animate-spin place-self-center">
-          {LoaderIcon}
+          <LoaderIcon size={24} color="var(--color-cta)" />
         </span>
         Loading Image...
       </p>
