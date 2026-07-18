@@ -4,7 +4,16 @@ import { useEffect } from "react";
 import Card from "@/components/UI/Card";
 import { WebsiteIcon, GithubIcon } from "@/utils/icons";
 
-export const Route = createFileRoute("/about")({ component: About });
+export const Route = createFileRoute("/about")({
+  component: About,
+  head: () => ({
+    meta: [
+      {
+        title: "About | Demo Website",
+      },
+    ],
+  }),
+});
 
 function About() {
   useEffect(() => {
@@ -51,16 +60,30 @@ function About() {
             <ul className="text-cta flex flex-wrap justify-center gap-3 font-bold">
               <li>
                 <Card className="bg-font-dark/40! hover:bg-font-dark/20!">
-                  <p className="flex items-center gap-1.5">
-                    <span>{WebsiteIcon}</span>Portfolio Website
-                  </p>
+                  <a
+                    href="https://portfolio-gulbindev.vercel.app/"
+                    target="_blank"
+                    className="flex items-center gap-1.5"
+                  >
+                    <span>
+                      <WebsiteIcon size={24} color="var(--color-cta)" />
+                    </span>
+                    Portfolio Website
+                  </a>
                 </Card>
               </li>
               <li>
                 <Card className="bg-font-dark/40! hover:bg-font-dark/20!">
-                  <p className="flex items-center gap-1.5">
-                    <span>{GithubIcon}</span>Github
-                  </p>
+                  <a
+                    href="https://github.com/gulbin-dev"
+                    target="_blank"
+                    className="flex items-center gap-1.5"
+                  >
+                    <span>
+                      <GithubIcon size={24} color="var(--color-cta)" />
+                    </span>
+                    Github
+                  </a>
                 </Card>
               </li>
             </ul>
