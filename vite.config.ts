@@ -13,7 +13,16 @@ const config = defineConfig({
     devtools(),
     netlify(),
     tailwindcss(),
-    tanstackStart(),
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+      },
+      sitemap: {
+        enabled: true,
+        host: "https://gulbindev-demo-trave-explore.netlify.app/",
+      },
+    }),
     viteReact(),
     babel({
       presets: [reactCompilerPreset()],
