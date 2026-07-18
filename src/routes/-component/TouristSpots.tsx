@@ -44,7 +44,10 @@ export default function TouristSpots() {
       ref={containerRef}
       className="text-font-dark tourist-spot__section relative z-50 mt-5 min-h-143.75"
     >
-      <h2 className="header__animate text-size-xl desktop:text-size-xxl desktop:text-primary overflow-hidden px-3 py-1 duration-0!">
+      <h2
+        id="explore-tourist-spots"
+        className="header__animate text-size-xl desktop:text-size-xxl desktop:text-primary overflow-hidden px-3 py-1 duration-0!"
+      >
         <span className="header__spanText_animate desktop:translate-y-[-115%] desktop:duration-0! desktop:opacity-100 desktop:motion-reduce:opacity-0 desktop:block desktop:motion-reduce:translate-y-0">
           Experience Majestic Feeling
         </span>
